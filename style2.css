@@ -70,6 +70,7 @@ img {
     padding: .2em .7em;
     border-radius: 1em;
     font-size: .55rem;
+    color: #fafafa;
 }
 
 .tag + .tag {
