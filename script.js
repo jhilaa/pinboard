@@ -9,13 +9,21 @@ function fetchData() {
         .then((data) => {
             console.log(data.records);
             for (const record of data.records) {
-                let fields = record.fields
+                let fields = record.fields;
+
+                // cas des tags
+                const tags_name = fields.tags_name;
+                const tags_color = fields.tags_color;
+                const tags_data = tags_name.map((tag_name, index) => {
+                    return { tag_name: tag_name, tag_color: tags_color[index] };
+                });
+
                 createNewCard({
                     id: data.records.id,
                     name: fields.name,
                     description: fields.description,
                     img_url: fields.img_url,
-                    tags: ["rose", "jaune", "orange"]
+                    tags_data: tags_data
                 });
             }
 
@@ -32,14 +40,13 @@ function createNewCard(record) {
     clone.querySelector(".card__body p").textContent = record.description;
     clone.querySelector(".card__header img").src = record.img_url;
 
-    //const tagsList = record....
-    const tagsList = [{name:"php", color:"blue"}, {name:"mimi", color:"cat"}]
+    //const tagsList = [{tag_name:"php", tag_color:"blue"}, {tag_name:"mimi", tag_color:"cat"}]
     const tags = clone.querySelector(".card__body .tags");
-    for (const tag of tagsList) {
+    for (const tag of record.tags_data) {
         let newSpan = document.createElement("span");
         newSpan.classList.add("tag");
-        newSpan.innerHTML = tag.name;
-        newSpan.style.background = "brown";
+        newSpan.innerHTML = tag.tag_name;
+        newSpan.style.background = tag.tag_color;
         tags.appendChild(newSpan);
     }
     clone.style.display = "block";
