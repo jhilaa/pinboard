@@ -73,17 +73,17 @@
 
             </div>
         </nav>
-        <div id="card__grid">
-            <div id="card__container">
-                <div class="card" id="card__0" style="display:none">
-                    <div class="card__header position-relative d-flex">
-                        <img src="https://source.unsplash.com/600x400/?tree" alt="card__image" class="card__image"
+        <div id="card_grid">
+            <div id="card_container">
+                <div class="card" id="card_0" rating="0" style="display:block">
+                    <div class="card_header position-relative d-flex">
+                        <img src="https://source.unsplash.com/600x400/?tree" alt="card_image" class="card_image"
                              width="600">
                         <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
-                            <div class="star position-relative d-flex rounded-pill">
-                                <i class="star1 bi bi-star-fill position-absolute top-50 start-0 translate-middle-y pb-1"></i>
-                                <i class="star2 bi bi-star-fill position-absolute top-50 start-50 translate-middle pb-1"></i>
-                                <i class="star3 bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1"></i>
+                            <div class="rating position-relative d-flex rounded-pill">
+                                <i class="star bi bi-star position-absolute top-50 start-0 translate-middle-y pb-1" data-value="1"></i>
+                                <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1" data-value="2"></i>
+                                <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1" data-value="3"></i>
                             </div>
                             <div class="pencil position-relative d-flex rounded-circle">
                                 <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
@@ -91,83 +91,12 @@
                         </div>
 
                     </div>
-                    <div class="card__body">
+                    <div class="card_body">
                         <div class="tags">
-                            <span class="tag tag-brown">Dog</span>
-                            <span class="tag tag-red">Nature</span>
                         </div>
-                        <h4>Tribean</h4>
+                        <h4 class="test">Tribean</h4>
                         <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae. Lorem
                             ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae</p>
-                    </div>
-                </div>
-                <div class="card" id="card__1">
-                    <div class="card__header position-relative d-flex">
-                        <img src="https://source.unsplash.com/600x400/?tree" alt="card__image" class="card__image"
-                             width="600">
-                        <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
-                            <div class="star position-relative d-flex rounded-pill">
-                                <i class="bi bi-star-fill position-absolute top-50 start-0 translate-middle-y pb-1"></i>
-                                <i class="bi bi-star-fill position-absolute top-50 start-50 translate-middle pb-1"></i>
-                                <i class="bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1"></i>
-                            </div>
-                            <div class="pencil position-relative d-flex rounded-circle">
-                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="card__body">
-                        <div class="tags">
-                            <span class="tag tag-brown">Dog</span>
-                            <span class="tag tag-red">Nature</span>
-                        </div>
-                        <h4>Tribean</h4>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae. Lorem
-                            ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae</p>
-                    </div>
-                </div>
-                <div class="card" id="card__2">
-                    <div class="card__header position-relative d-flex">
-                        <img src="https://source.unsplash.com/600x400/?dog" alt="card__image" class="card__image"
-                             width="600">
-                        <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
-                            <div class="star position-relative d-flex rounded-pill">
-                                <i class="bi bi-star-fill position-absolute top-50 start-0 translate-middle-y pb-1"></i>
-                                <i class="bi bi-star position-absolute top-50 start-50 translate-middle pb-1"></i>
-                                <i class="bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1"></i>
-                            </div>
-                            <div class="pencil position-relative d-flex rounded-circle">
-                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="card__body">
-                        <span class="tag tag-red">Mathematics</span>
-                        <h4>Tribean</h4>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae.</p>
-                    </div>
-                </div>
-                <div class="card" id="card__3">
-                    <div class="card__header position-relative d-flex">
-                        <img src="https://source.unsplash.com/600x400/?computer" alt="card__image" class="card__image"
-                             width="600">
-                        <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
-                            <div class="star position-relative d-flex rounded-pill">
-                                <i class="bi bi-star-fill position-absolute top-50 start-0 translate-middle-y pb-1"></i>
-                                <i class="bi bi-star-fill position-absolute top-50 start-50 translate-middle pb-1"></i>
-                                <i class="bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1"></i>
-                            </div>
-                            <div class="pencil position-relative d-flex rounded-circle">
-                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card__body">
-                        <span class="tag tag-blue">Technology</span>
-                        <h4>Tribean</h4>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae.</p>
                     </div>
                 </div>
             </div>

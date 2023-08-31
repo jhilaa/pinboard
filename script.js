@@ -31,17 +31,50 @@ function fetchData() {
         .catch(error => console.error("Erreur lors de la récupération des données:", error));
 }
 
+// création de la carte + ajout des tags + ajout des events
 function createNewCard(record) {
-    const card__container = document.getElementById("card__container");
-    const card__model = document.getElementById("card__0")
-    const clone = card__model.cloneNode(true);
+    const card_container = document.getElementById("card_container");
+    const card_model = document.getElementById("card_0")
+    const clone = card_model.cloneNode(true);
 
-    clone.querySelector(".card__body h4").textContent = record.name;
-    clone.querySelector(".card__body p").textContent = record.description;
-    clone.querySelector(".card__header img").src = record.img_url;
+    clone.querySelector(".card_body h4").textContent = record.name;
+    clone.querySelector(".card_body p").textContent = record.description;
+    clone.querySelector(".card_header img").src = record.img_url;
 
-    //const tagsList = [{tag_name:"php", tag_color:"blue"}, {tag_name:"mimi", tag_color:"cat"}]
-    const tags = clone.querySelector(".card__body .tags");
+    // event sur le score
+    const card_header = clone.querySelector(".card_header");
+    const rating = card_header.querySelector('.rating');
+    const stars = rating.querySelectorAll('.star');
+    let currentScore = 0;
+
+    stars.forEach(star => {
+        star.addEventListener('click', () => {
+            const parentCard = star.closest(".card");
+            const old_value = parseInt(parentCard.getAttribute('rating'));
+            let new_value = parseInt(star.getAttribute('data-value'));
+
+            if (old_value == 1 && new_value == 1) {
+                new_value=0;
+            }
+            parentCard.setAttribute("rating", new_value);
+            updateStars(old_value, new_value);
+        });
+    });
+
+    function updateStars(old_value, new_value) {
+        stars.forEach((star, index) => {
+            if (index <= new_value-1) {
+                star.classList.add('bi-star-fill');
+                star.classList.remove('bi-star');
+            } else {
+                star.classList.add('bi-star');
+                star.classList.remove('bi-star-fill');
+            }
+        });
+    }
+
+    //tags
+    const tags = clone.querySelector(".card_body .tags");
     for (const tag of record.tags_data) {
         let newSpan = document.createElement("span");
         newSpan.classList.add("tag");
@@ -50,7 +83,7 @@ function createNewCard(record) {
         tags.appendChild(newSpan);
     }
     clone.style.display = "block";
-    card__container.appendChild(clone);
+    card_container.appendChild(clone);
 }
 
 fetchData();
