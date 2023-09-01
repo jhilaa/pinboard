@@ -4,7 +4,7 @@ function fetchData() {
         "Authorization": `Bearer ${token}`
     });
 
-    fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pages", {headers})
+    fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pages?view=Grid%20view", {headers})
         .then(response => response.json())
         .then((data) => {
             console.log(data.records);

@@ -50,7 +50,7 @@ img {
     font-size: 0.9rem;
     text-transform: capitalize;
     margin-top: 0.3rem;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.2rem;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -82,7 +82,7 @@ img {
     font-size: 0.8em;
     font-weight: 15;
     line-height: 1.1em;
-    color: #999;
+    color: #000;
     height: 70px;
     overflow: overlay;
     margin-bottom: 0.8em;
