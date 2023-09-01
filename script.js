@@ -19,7 +19,8 @@ function fetchData() {
                 });
 
                 createNewCard({
-                    id: data.records.id,
+                    id: record.id,
+                    url: fields.url,
                     name: fields.name,
                     description: fields.description,
                     img_url: fields.img_url,
@@ -37,8 +38,11 @@ function createNewCard(record) {
     const card_model = document.getElementById("card_0")
     const clone = card_model.cloneNode(true);
 
+    clone.id = record.id
     clone.querySelector(".card_body h4").textContent = record.name;
-    clone.querySelector(".card_body p").textContent = record.description;
+    clone.querySelector(".card_body .description").textContent = record.description;
+    clone.querySelector(".card_body .url").textContent = record.url;
+    clone.querySelector(".card_body .url").href = record.url;
     clone.querySelector(".card_header img").src = record.img_url;
 
     // event sur le score

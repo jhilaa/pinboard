@@ -18,13 +18,13 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: left;
-    max-width: 1200px;
-    margin-block: 2rem;
-    gap: 2rem;
+    max-width: 1500px;
+    margin-block: 1rem;
+    gap: 1rem;
 }
 
 img {
-    height: 90px;
+    height: 75px;
     max-width: 100%;
     display: block;
     object-fit: cover;
@@ -46,20 +46,44 @@ img {
     max-height: 150px;
 }
 
-.card_body h4 {
+.card_body .name {
     font-size: 0.9rem;
     text-transform: capitalize;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+    margin-top: 0.3rem;
+    margin-bottom: 0.4rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-.card_body p {
+.card_body .url {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.7em;
+    font-weight: 15;
+    line-height: 1.1em;
+    color: #999;
+    max-height: 25px;
+    text-decoration: underline;
+    margin-bottom: 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card_body .url:hover {
+    pointer-events: auto;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.card_body .description {
     font-family: 'Poppins', sans-serif;
     font-size: 0.8em;
     font-weight: 15;
     line-height: 1.1em;
     color: #999;
-    height: 75px;
+    height: 70px;
     overflow: overlay;
     margin-bottom: 0.8em;
 }
