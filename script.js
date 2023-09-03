@@ -15,7 +15,7 @@ function fetchData() {
                 const tags_name = fields.tags_name;
                 const tags_color = fields.tags_color;
                 const tags_data = tags_name.map((tag_name, index) => {
-                    return { tag_name: tag_name, tag_color: tags_color[index] };
+                    return {tag_name: tag_name, tag_color: tags_color[index]};
                 });
 
                 createNewCard({
@@ -23,6 +23,7 @@ function fetchData() {
                     url: fields.url,
                     name: fields.name,
                     description: fields.description,
+                    rating: fields.rating,
                     img_url: fields.img_url,
                     tags_data: tags_data
                 });
@@ -34,31 +35,35 @@ function fetchData() {
 
 // création de la carte + ajout des tags + ajout des events
 function createNewCard(record) {
+    // élément parent
     const card_container = document.getElementById("card_container");
+    // clone d'une fiche
     const card_model = document.getElementById("card_0")
     const clone = card_model.cloneNode(true);
+    ;
 
+    // mise à jour des données de la fiche
     clone.id = record.id
     clone.querySelector(".card_body h4").textContent = record.name;
     clone.querySelector(".card_body .description").textContent = record.description;
     clone.querySelector(".card_body .url").textContent = record.url;
     clone.querySelector(".card_body .url").href = record.url;
     clone.querySelector(".card_header img").src = record.img_url;
+    clone.setAttribute("rating", record.rating);
 
-    // event sur le score
-    const card_header = clone.querySelector(".card_header");
-    const rating = card_header.querySelector('.rating');
-    const stars = rating.querySelectorAll('.star');
-    let currentScore = 0;
-
+    const stars = clone.querySelectorAll('.star');
     stars.forEach(star => {
+        const parentCard = star.closest(".card");
+        // init des étoiles
+        updateStars(0, record.rating);
+
+        // gestion des modifications
         star.addEventListener('click', () => {
-            const parentCard = star.closest(".card");
             const old_value = parseInt(parentCard.getAttribute('rating'));
             let new_value = parseInt(star.getAttribute('data-value'));
 
             if (old_value == 1 && new_value == 1) {
-                new_value=0;
+                new_value = 0;
             }
             parentCard.setAttribute("rating", new_value);
             updateStars(old_value, new_value);
@@ -67,7 +72,7 @@ function createNewCard(record) {
 
     function updateStars(old_value, new_value) {
         stars.forEach((star, index) => {
-            if (index <= new_value-1) {
+            if (index <= new_value - 1) {
                 star.classList.add('bi-star-fill');
                 star.classList.remove('bi-star');
             } else {
