@@ -49,6 +49,7 @@ img {
 .card_body .name {
     font-size: 0.9rem;
     text-transform: capitalize;
+    font-weight: 600;
     margin-top: 0.3rem;
     margin-bottom: 0.2rem;
     overflow: hidden;
@@ -147,6 +148,8 @@ img {
     padding: 2px;
 }
 
-
+.overflow-y-hidden {
+    overflow-y: hidden;
+}
 
 
