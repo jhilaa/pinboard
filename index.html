@@ -14,7 +14,9 @@
     <!-- Our Custom CSS -->
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="style2.css">
-</head>
+    <!-- modal -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    </head>
 <body>
 <div class="wrapper" >
     <div id="spinnerContainer" >
@@ -22,6 +24,7 @@
             <span class="sr-only"></span>
         </div>
     </div>
+
     <!-- Sidebar Holder -->
     <nav id="sidebar">
         <div class="sidebar-header">
@@ -72,11 +75,64 @@
                         <i class="glyphicon glyphicon-align-left"></i>
                         <span>Toggle Sidebar</span>
                     </button>
+                    <!-- Button to trigger the popup -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#popupCarousel">Open Popup</button>
+
                 </div>
 
             </div>
         </nav>
         <div id="card_grid">
+            <!-- Popup Carousel -->
+            <div class="modal fade" id="popupCarousel" tabindex="-1" role="dialog" aria-labelledby="popupCarouselLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="popupCarouselLabel">Popup Carousel</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Bootstrap Carousel -->
+                            <div id="carouselExample" class="carousel slide" data-ride="carousel">
+                                <div class="carousel-inner">
+                                    <!-- Slide 1 -->
+                                    <div class="carousel-item active">
+                                        <div>
+                                            <p>This is the first paragraph of Slide 1.</p>
+                                            <img src="https://st4.depositphotos.com/1579394/40049/i/1600/depositphotos_400498380-stock-photo-old-vintage-monochrome-photographs-sepia.jpg" alt="Image 1 Alt Text">
+                                            <p>This is the second paragraph of Slide 1.</p>
+                                        </div>
+                                    </div>
+                                    <!-- Slide 2 -->
+                                    <div class="carousel-item">
+                                        <div>
+                                            <p>This is the first paragraph of Slide 2.</p>
+                                            <img src="https://st3.depositphotos.com/2130737/16438/i/450/depositphotos_164384426-stock-photo-old-stone-spheres-or-kernels.jpg" alt="Image 2 Alt Text">
+                                            <p>This is the second paragraph of Slide 2.</p>
+                                        </div>
+                                    </div>
+                                    <!-- Add more slides as needed -->
+                                </div>
+                                <!-- Carousel Controls -->
+                                <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="card_container">
                 <div class="card" id="card_0" rating="0" style="display:none">
                     <div class="card_header position-relative d-flex">
@@ -106,6 +162,7 @@
             </div>
         </div>
     </div>
+    <!-- ----------->
 </div>
 
 
@@ -123,5 +180,10 @@
 </script>
 
 <script src="script.js"></script>
+<!-- modal ------>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
