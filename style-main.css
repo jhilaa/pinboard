@@ -10,7 +10,7 @@ body {
     background: #fafafa;
 }
 
-p {
+body p {
     font-family: 'Poppins', sans-serif;
     font-size: 1.1em;
     font-weight: 300;
@@ -18,13 +18,13 @@ p {
     color: #999;
 }
 
-a, a:hover, a:focus {
+body a, a:hover, a:focus {
     color: inherit;
     text-decoration: none;
     transition: all 0.3s;
 }
 
-.navbar {
+body navbar {
     padding: 2px 2px;
     background: #fff;
     border: none;
@@ -33,13 +33,13 @@ a, a:hover, a:focus {
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.navbar-btn {
+body .navbar-btn {
     box-shadow: none;
     outline: none !important;
     border: none;
 }
 
-.line {
+body .line {
     width: 100%;
     height: 1px;
     border-bottom: 1px dashed #ddd;
@@ -49,7 +49,7 @@ a, a:hover, a:focus {
 /* ---------------------------------------------------
     SIDEBAR STYLE
 ----------------------------------------------------- */
-.wrapper {
+body .wrapper {
     display: flex;
     align-items: stretch;
 }

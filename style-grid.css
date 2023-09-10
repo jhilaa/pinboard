@@ -8,13 +8,13 @@
     margin: 0;
 }
 
-#card_grid {
+#pin_grid {
     font-family: "Quicksand", sans-serif;
     place-items: center;
     height: 100vh;
 }
 
-#card_container {
+#pin_grid #pin_container {
     display: flex;
     flex-wrap: wrap;
     justify-content: left;
@@ -23,14 +23,14 @@
     gap: 1rem;
 }
 
-img {
+#pin_grid img {
     height: 75px;
     max-width: 100%;
     display: block;
     object-fit: cover;
 }
 
-.card {
+#pin_grid  .pin {
     display: flex;
     flex-direction: column;
     width: clamp(12rem, calc(12rem + 2vw), 12rem);
@@ -40,13 +40,13 @@ img {
 }
 
 
-.card_body {
+#pin_grid .pin_body {
     padding: 0rem 0.5rem;
     gap: .5rem;
     max-height: 150px;
 }
 
-.card_body .name {
+#pin_grid  .pin_body .name {
     font-size: 0.9rem;
     text-transform: capitalize;
     font-weight: 600;
@@ -57,7 +57,7 @@ img {
     white-space: nowrap;
 }
 
-.card_body .url {
+.pin_body .url {
     display: block;
     font-family: 'Poppins', sans-serif;
     font-size: 0.7em;
@@ -72,13 +72,13 @@ img {
     white-space: nowrap;
 }
 
-.card_body .url:hover {
+.pin_body .url:hover {
     pointer-events: auto;
     cursor: pointer;
     font-size: 0.8em;
 }
 
-.card_body .description {
+.pin_body .description {
     font-family: 'Poppins', sans-serif;
     font-size: 0.8em;
     font-weight: 15;
@@ -90,7 +90,7 @@ img {
 }
 
 
-.tag {
+#pin_grid .tag {
     align-self: flex-start;
     padding: .2em .7em;
     border-radius: 1em;
@@ -98,34 +98,34 @@ img {
     color: #fafafa;
 }
 
-.tag + .tag {
+#pin_grid .tag + .tag {
     margin-left: .35em;
 }
 
-.tag-blue {
+#pin_grid .tag-blue {
     background: #56CCF2;
     background: linear-gradient(to bottom, #2F80ED, #56CCF2);
     color: #fafafa;
 }
 
-.tag-brown {
+#pin_grid .tag-brown {
     background: #D1913C;
     color: #fafafa;
 }
 
-.tag-red {
+#pin_grid .tag-red {
     background: #cb2d3e;
     color: #fafafa;
 }
 
 
-.card_footer {
+#pin_grid .pin_footer {
     display: flex;
     flex-direction: row;
     padding: 0rem 0.5rem;
 }
 
-.rating {
+#pin_grid .rating {
     margin-top: 5px;
     margin-right: 3px;
     width: 50px;
@@ -134,12 +134,8 @@ img {
     padding: 2px;
 }
 
-.test {
-    cursor: pointer;
-    color:#000;
-}
 
-.pencil {
+#pin_grid .pencil {
     margin-top: 5px;
     margin-right: 3px;
     width: 20px;
@@ -148,7 +144,7 @@ img {
     padding: 2px;
 }
 
-.overflow-y-hidden {
+#pin_grid .overflow-y-hidden {
     overflow-y: hidden;
 }
 

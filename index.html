@@ -11,11 +11,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-    <!-- Our Custom CSS -->
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="style2.css">
     <!-- modal -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Our Custom CSS -->
+    <link rel="stylesheet" href="style-main.css">
+    <link rel="stylesheet" href="style-grid.css">
+    <link rel="stylesheet" href="style-carousel.css">
     </head>
 <body>
 <div class="wrapper" >
@@ -82,28 +83,56 @@
 
             </div>
         </nav>
-        <div id="card_grid">
+        <div id="pin_grid">
+            <!-- ========================================= -->
             <!-- Popup Carousel -->
-            <div class="modal fade" id="popupCarousel" tabindex="-1" role="dialog" aria-labelledby="popupCarouselLabel" aria-hidden="true">
+            <div class="modal fade" id="carouselItem-0" tabindex="-1" role="dialog" aria-labelledby="popupCarouselLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
+                        <!--
                         <div class="modal-header">
                             <h5 class="modal-title" id="popupCarouselLabel">Popup Carousel</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
+                        -->
                         <div class="modal-body">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="popupCarouselLabel">Popup Carousel</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+
                             <!-- Bootstrap Carousel -->
-                            <div id="carouselExample" class="carousel slide" data-ride="carousel">
+                            <div id="carouselExample" class="carousel slide" data-ride="carousel" data-interval="0">
                                 <div class="carousel-inner">
                                     <!-- Slide 1 -->
                                     <div class="carousel-item active">
-                                        <div>
-                                            <p>This is the first paragraph of Slide 1.</p>
-                                            <img src="https://st4.depositphotos.com/1579394/40049/i/1600/depositphotos_400498380-stock-photo-old-vintage-monochrome-photographs-sepia.jpg" alt="Image 1 Alt Text">
-                                            <p>This is the second paragraph of Slide 1.</p>
+                                        <!-- test page carrousel------>
+                                        <div id="recImOACEJZY0Gb2k" rating="3" style="display: block;">
+                                            <div class="pin_header_xxx position-relative d-flex">
+                                                <img src="https://dpo5b3b56op9b.cloudfront.net/content/autocode/release/static/social/og-image-04-05-2023-9190db9d.webp" alt="pin_image" class="pin_image" width="600">
+                                                <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
+                                                    <div class="rating position-relative d-flex rounded-pill">
+                                                        <i class="star bi position-absolute top-50 start-0 translate-middle-y pb-1 bi-star-fill" data-value="1"></i>
+                                                        <i class="star bi position-absolute top-50 start-50 translate-middle pb-1 bi-star-fill" data-value="2"></i>
+                                                        <i class="star bi position-absolute top-50 end-0 translate-middle-y pb-1 bi-star-fill" data-value="3"></i>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="pin_body">
+                                                <div class="tags">
+                                                    <span class="tag" style="background: rgb(255, 38, 69);">php</span><span class="tag" style="background: red;">node.js</span></div>
+                                                <h4 class="name">Your instant API toolkit - Autocode</h4>
+                                                <a class="url" href="https://autocode.com/" target="_blank">https://autocode.com/</a>
+                                                <p class="description">ok</p>
+                                            </div>
                                         </div>
+                                        <!--------->
                                     </div>
                                     <!-- Slide 2 -->
                                     <div class="carousel-item">
@@ -133,10 +162,10 @@
                 </div>
             </div>
 
-            <div id="card_container">
-                <div class="card" id="card_0" rating="0" style="display:none">
-                    <div class="card_header position-relative d-flex">
-                        <img src="https://source.unsplash.com/600x400/?tree" alt="card_image" class="card_image"
+            <div id="pin_container">
+                <div class="pin" id="pin_0" rating="0" style="display:none">
+                    <div class="pin_header position-relative d-flex">
+                        <img src="https://source.unsplash.com/600x400/?tree" alt="pin_image" class="pin_image"
                              width="600">
                         <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
                             <div class="rating position-relative d-flex rounded-pill">
@@ -144,13 +173,21 @@
                                 <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1" data-value="2"></i>
                                 <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1" data-value="3"></i>
                             </div>
+                            <!--
+                            <div class="pencil position-relative d-flex rounded-circle">
+                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
+                            </div>
+                            <div class="pencil position-relative d-flex rounded-circle">
+                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
+                            </div>
+                            -->
                             <div class="pencil position-relative d-flex rounded-circle">
                                 <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
                             </div>
                         </div>
 
                     </div>
-                    <div class="card_body">
+                    <div class="pin_body">
                         <div class="tags">
                         </div>
                         <h4 class="name">Tribean</h4>
@@ -180,6 +217,7 @@
 </script>
 
 <script src="script.js"></script>
+
 <!-- modal ------>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
