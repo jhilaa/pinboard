@@ -5,22 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>Collapsible sidebar using Bootstrap 3</title>
+    <title>Pinboard Wizard</title>
 
-    <!-- Bootstrap CSS CDN -->
+    <!-- Bootstrap Js CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
-    <!-- modal -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Our Custom CSS -->
     <link rel="stylesheet" href="style-main.css">
     <link rel="stylesheet" href="style-grid.css">
     <link rel="stylesheet" href="style-carousel.css">
-    </head>
+
+</head>
 <body>
-<div class="wrapper" >
-    <div id="spinnerContainer" >
+<div class="wrapper">
+
+    <!-- Popup Carousel -->
+    <div class="modal fade" id="popupCarousel" tabindex="-1" role="dialog" aria-labelledby="popupCarouselLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="popupCarouselLabel">Popup Carousel</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <!-- Bootstrap Carousel -->
+                    <div id="carouselExample" class="carousel slide" data-ride="carousel">
+                        <div id="carousel-inner" class="carousel-inner">
+                            <!-- Slide 0 -->
+                            <div id="modal_0" class="carousel-item">
+                                <div>
+                                    <p class="title">This is the first paragraph of Slide 1.</p>
+                                    <img src="" alt="Image 1">
+                                    <p class="description">This is the second paragraph of Slide 1.</p>
+                                </div>
+                            </div>
+                            <!-- Slide 1 -->
+                            <div class="carousel-item active">
+                                <div>
+                                    <p>This is the first paragraph of Slide 1.</p>
+                                    <img src="https://st4.depositphotos.com/1579394/40049/i/1600/depositphotos_400498380-stock-photo-old-vintage-monochrome-photographs-sepia.jpg"
+                                         alt="Image 1 Alt Text">
+                                    <p>This is the second paragraph of Slide 1.</p>
+                                </div>
+                            </div>
+                            <!-- Slide 2 -->
+                            <div class="carousel-item">
+                                <div>
+                                    <p>This is the first paragraph of Slide 2.</p>
+                                    <img src="https://st3.depositphotos.com/2130737/16438/i/450/depositphotos_164384426-stock-photo-old-stone-spheres-or-kernels.jpg"
+                                         alt="Image 2 Alt Text">
+                                    <p>This is the second paragraph of Slide 2.</p>
+                                </div>
+                            </div>
+                            <!-- Add more slides as needed -->
+                        </div>
+                        <!-- Carousel Controls -->
+                        <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                        <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="spinnerContainer">
         <div class="spinner-border text-secondary" role="status">
             <span class="sr-only"></span>
         </div>
@@ -33,7 +96,15 @@
         </div>
 
         <ul class="list-unstyled components">
-            <p>Dummy Heading</p>
+
+            <div class="rating position-relative d-flex">
+                <i class="star bi bi-star position-absolute top-50 start-0 translate-middle-y pb-1" data-value="1"></i>
+                <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1" data-value="2"></i>
+                <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1" data-value="3"></i>
+
+            </div>
+            <form id="checboxes_container">
+            </form>
             <li class="active">
                 <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
                 <ul class="collapse list-unstyled" id="homeSubmenu">
@@ -77,91 +148,14 @@
                         <span>Toggle Sidebar</span>
                     </button>
                     <!-- Button to trigger the popup -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#popupCarousel">Open Popup</button>
-
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#popupCarousel">Open
+                        Popup
+                    </button>
                 </div>
 
             </div>
         </nav>
         <div id="pin_grid">
-            <!-- ========================================= -->
-            <!-- Popup Carousel -->
-            <div class="modal fade" id="carouselItem-0" tabindex="-1" role="dialog" aria-labelledby="popupCarouselLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <!--
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="popupCarouselLabel">Popup Carousel</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        -->
-                        <div class="modal-body">
-
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="popupCarouselLabel">Popup Carousel</h5>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-
-                            <!-- Bootstrap Carousel -->
-                            <div id="carouselExample" class="carousel slide" data-ride="carousel" data-interval="0">
-                                <div class="carousel-inner">
-                                    <!-- Slide 1 -->
-                                    <div class="carousel-item active">
-                                        <!-- test page carrousel------>
-                                        <div id="recImOACEJZY0Gb2k" rating="3" style="display: block;">
-                                            <div class="pin_header_xxx position-relative d-flex">
-                                                <img src="https://dpo5b3b56op9b.cloudfront.net/content/autocode/release/static/social/og-image-04-05-2023-9190db9d.webp" alt="pin_image" class="pin_image" width="600">
-                                                <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
-                                                    <div class="rating position-relative d-flex rounded-pill">
-                                                        <i class="star bi position-absolute top-50 start-0 translate-middle-y pb-1 bi-star-fill" data-value="1"></i>
-                                                        <i class="star bi position-absolute top-50 start-50 translate-middle pb-1 bi-star-fill" data-value="2"></i>
-                                                        <i class="star bi position-absolute top-50 end-0 translate-middle-y pb-1 bi-star-fill" data-value="3"></i>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                            <div class="pin_body">
-                                                <div class="tags">
-                                                    <span class="tag" style="background: rgb(255, 38, 69);">php</span><span class="tag" style="background: red;">node.js</span></div>
-                                                <h4 class="name">Your instant API toolkit - Autocode</h4>
-                                                <a class="url" href="https://autocode.com/" target="_blank">https://autocode.com/</a>
-                                                <p class="description">ok</p>
-                                            </div>
-                                        </div>
-                                        <!--------->
-                                    </div>
-                                    <!-- Slide 2 -->
-                                    <div class="carousel-item">
-                                        <div>
-                                            <p>This is the first paragraph of Slide 2.</p>
-                                            <img src="https://st3.depositphotos.com/2130737/16438/i/450/depositphotos_164384426-stock-photo-old-stone-spheres-or-kernels.jpg" alt="Image 2 Alt Text">
-                                            <p>This is the second paragraph of Slide 2.</p>
-                                        </div>
-                                    </div>
-                                    <!-- Add more slides as needed -->
-                                </div>
-                                <!-- Carousel Controls -->
-                                <a class="carousel-control-prev" href="#carouselExample" role="button" data-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="carousel-control-next" href="#carouselExample" role="button" data-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="sr-only">Next</span>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
             <div id="pin_container">
                 <div class="pin" id="pin_0" rating="0" style="display:none">
                     <div class="pin_header position-relative d-flex">
@@ -169,18 +163,14 @@
                              width="600">
                         <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
                             <div class="rating position-relative d-flex rounded-pill">
-                                <i class="star bi bi-star position-absolute top-50 start-0 translate-middle-y pb-1" data-value="1"></i>
-                                <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1" data-value="2"></i>
-                                <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1" data-value="3"></i>
+                                <i class="star bi bi-star position-absolute top-50 start-0 translate-middle-y pb-1"
+                                   data-value="1"></i>
+                                <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1"
+                                   data-value="2"></i>
+                                <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1"
+                                   data-value="3"></i>
+
                             </div>
-                            <!--
-                            <div class="pencil position-relative d-flex rounded-circle">
-                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
-                            </div>
-                            <div class="pencil position-relative d-flex rounded-circle">
-                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
-                            </div>
-                            -->
                             <div class="pencil position-relative d-flex rounded-circle">
                                 <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
                             </div>
@@ -192,22 +182,22 @@
                         </div>
                         <h4 class="name">Tribean</h4>
                         <a class="url" href="" target="_blank">url</a>
-                        <p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae. Lorem
+                        <p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi
+                            perferendis molestiae. Lorem
                             ipsum dolor sit amet consectetur adipisicing elit. Sequi perferendis molestiae</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- ----------->
+    <!-- Grey Background Overlay -->
+    <div id="overlay"></div>
 </div>
 
 
 <!-- jQuery CDN -->
-<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
-<!-- Bootstrap Js CDN -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $('#sidebarCollapse').on('click', function () {
@@ -217,7 +207,6 @@
 </script>
 
 <script src="script.js"></script>
-
 <!-- modal ------>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

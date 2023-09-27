@@ -134,6 +134,11 @@
     padding: 2px;
 }
 
+.rating {
+    display: flex;
+    align-items: center;
+}
+
 
 #pin_grid .pencil {
     margin-top: 5px;

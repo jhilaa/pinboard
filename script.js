@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         clone.setAttribute("rating", record.fields.rating);
 
         const stars = clone.querySelectorAll('.star');
-
         stars.forEach((star, index) => {
             star.addEventListener('click', () => {
                 const old_value = parseInt(clone.getAttribute('rating'));
@@ -40,14 +39,31 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const tags = clone.querySelector(".pin_body .tags");
         for (const tag of tagsData) {
+            //
             const newSpan = document.createElement("span");
-            newSpan.classList.add("tag");
             newSpan.innerHTML = tag.tag_name;
             newSpan.style.background = tag.tag_color;
+            newSpan.id=tag.tag_id
+            newSpan.classList.add("tag");
             tags.appendChild(newSpan);
+            //
+            clone.classList.add(tag.tag_id);
         }
 
         clone.style.display = "block";
+        return clone;
+    }
+
+    //** 2. Création des tuiles
+    function createNewModal(modalModel, record, tagsData) {
+        const clone = modalModel.cloneNode(true);
+
+        clone.id = record.id;
+        clone.querySelector(".title").textContent = record.fields.name;
+        clone.querySelector(".description").textContent = record.fields.description;
+        clone.querySelector("img").src = record.fields.img_url;
+        clone.setAttribute("rating", record.fields.rating)
+
         return clone;
     }
 
@@ -97,30 +113,79 @@ document.addEventListener("DOMContentLoaded", async function () {
             try {
                 // Handle the results of both promises
                 const [pinData, tagData] = results; // Corrected variable names
+
+                // Handle tags Data
+                const checboxesContainer = document.getElementById("checboxes_container");
+                for (const tag of tagData.records) {
+                    const tagItemDiv = document.createElement("div");
+                    const tagItemInput = document.createElement("input");
+                    const tagItemLabel = document.createElement("label");
+                    tagItemInput.type="checkbox";
+                    tagItemInput.id=tag.id;
+                    tagItemInput.name=tag.fields.name;
+                    tagItemLabel.setAttribute('for',tag.fields.name)
+                    tagItemLabel.innerHTML=tag.fields.name;
+
+                    tagItemDiv.appendChild(tagItemInput);
+                    tagItemDiv.appendChild(tagItemLabel);
+                    checboxesContainer.appendChild(tagItemDiv);
+                }
+
+                // Create pin
                 const pinContainer = document.getElementById("pin_container");
                 const pinModel = document.getElementById("pin_0");
+
+                const modalContainer = document.getElementById("carousel-inner");
+                const modalModel = document.getElementById("modal_0");
+
                 let tagsData = [];
                 for (const record of pinData.records) {
                     if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
                         tagsData = record.fields.tags_name.map((tag_name, index) => ({
                             tag_name: tag_name,
-                            tag_color: record.fields.tags_color[index]
+                            tag_color: record.fields.tags_color[index],
+                            tag_id: record.fields.tag[index]
                         }));
                     }
 
                     const clonedPin = createNewPin(pinModel, record, tagsData);
                     pinContainer.appendChild(clonedPin);
+
+                    const clonedModal = createNewModal(modalModel, record, tagsData)
+                    modalContainer.appendChild(clonedModal);
                 }
 
                 console.log("Data loaded successfully.");
+
+                //
+
             } catch (error) {
                 console.error("Error fetching or processing data:", error);
             } finally {
                 spinnerContainer.style.display = "none";
             }
         })
+        .then (() => {
+            // Get all checked checkboxes
+            document.getElementById("checboxes_container").addEventListener("change", filterPins);
+        })
         .catch((error) => {
             // Handle any errors that occurred in any of the promises
             console.error("An error occurred:", error);
         });
+
+    function filterPins() {
+        // Get all checked checkboxes
+        const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
+        // Get all pin elements
+        const pins = Array.from(document.querySelectorAll(".pin"));
+
+        const checkboxesId = checkedCheckboxes.map((checkbox) => {return "."+checkbox.id});
+        const checkboxesList = checkboxesId.join(",")
+        const selectedPins = document.querySelectorAll(checkboxesList);
+
+        // Show all pins initially
+        pins.forEach(pin => pin.style.display = "none");
+        selectedPins.forEach(pin => pin.style.display = "block");
+    }
 });
