@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 for (const record of pinData.records) {
                     if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
                         tagsData = record.fields.tags_name.map((tag_name, index) => ({
-                            tag_name: tag_name,
+                            tag_name: tag_name.replace(" ","&nbsp;"),
                             tag_color: record.fields.tags_color[index],
                             tag_id: record.fields.tag[index]
                         }));
@@ -214,7 +214,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const visiblePinsTags = document.querySelectorAll('.pin:not([style="none"]) .tag');
         const visiblePinsTagsArray = [...visiblePinsTags];
         const tagsId = visiblePinsTagsArray.map((tag) => {return tag.id});
-
         const tagsCount = tagsId.reduce((acc, id) => {
             //const id = objet.id;
             if (!acc[id]) {
@@ -228,24 +227,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         const tagOccurences = Object.entries(tagsCount).map(([id, occurrences]) => ({ id, occurrences }));
         console.log (tagOccurences);
 
-        const labelElements = {}; // Stockez les références aux éléments <label> par ID
+        tagOccurences.forEach(tag => {
+            const labelForId = tag.id;
+            const labelElement = document.querySelector(`label[for="${labelForId}"]`);
 
-        tagOccurences.forEach((tag) => {
-            const tagId = tag.id;
-            const tagLabel = labelElements[tagId]; // Récupérez l'élément <label> à partir du stockage
-            if (tagLabel) {
-                tagLabel.textContent = tagLabel.textContent + " (" + tag.occurrences + ")";
+            if (labelElement) {
+                // Mettre à jour le contenu textuel de l'objet label
+                labelElement.textContent = `${labelElement.textContent} (${tag.occurrences})`;
+                //labelElement.textContent = labelElement.textContent + " ("+tag.occurrences+")"`;
             }
         });
-
-        // Remplissez l'objet labelElements avec les références aux éléments <label> au préalable
-        tagOccurences.forEach((tag) => {
-            const tagLabelObject = document.querySelector('label[for="' + tag.id + '"]');
-            if (tagLabelObject) {
-                labelElements[tag.id] = tagLabelObject;
-            }
-        });
-            //pin.style.display = "block");
 
 
     }
