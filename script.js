@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const newSpan = document.createElement("span");
             newSpan.innerHTML = tag.tag_name;
             newSpan.style.background = tag.tag_color;
-            newSpan.id=tag.tag_id
+            newSpan.id = tag.tag_id
             newSpan.classList.add("tag");
             tags.appendChild(newSpan);
             //
@@ -106,6 +106,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("Error fetching or processing data:", error);
         }
     }
+
     //** FIN DATA **********************
 
     Promise.all([getPinData(), getTagData()])
@@ -113,22 +114,36 @@ document.addEventListener("DOMContentLoaded", async function () {
             try {
                 // Handle the results of both promises
                 const [pinData, tagData] = results; // Corrected variable names
-
                 // Handle tags Data
-                const checboxesContainer = document.getElementById("checboxes_container");
-                for (const tag of tagData.records) {
+                const sortedTags = tagData.records.toSorted((a, b) => {
+                                            const nameA = a.fields.name.toLowerCase();
+                                            const nameB = b.fields.name.toLowerCase();
+
+                                            if (nameA < nameB) return -1;
+                                            if (nameA > nameB) return 1;
+                                            return 0;
+                                        });
+                const checkboxesContainer = document.getElementById("checkboxes_container");
+
+                for (const tag of sortedTags) {
                     const tagItemDiv = document.createElement("div");
                     const tagItemInput = document.createElement("input");
                     const tagItemLabel = document.createElement("label");
-                    tagItemInput.type="checkbox";
-                    tagItemInput.id=tag.id;
-                    tagItemInput.name=tag.fields.name;
-                    tagItemLabel.setAttribute('for',tag.fields.name)
-                    tagItemLabel.innerHTML=tag.fields.name;
+                    tagItemInput.classList.add("form-check-input");
+                    tagItemInput.type = "checkbox";
+                    tagItemInput.value = "";
+                    tagItemInput.id = tag.id;
+                    tagItemInput.name = tag.fields.name;
+
+                    tagItemLabel.setAttribute('for', tag.id)
+                    tagItemLabel.innerHTML = tag.fields.name;
+                    tagItemInput.name = tag.fields.name;
+                    tagItemLabel.classList.add("form-check-label");
 
                     tagItemDiv.appendChild(tagItemInput);
                     tagItemDiv.appendChild(tagItemLabel);
-                    checboxesContainer.appendChild(tagItemDiv);
+                    tagItemDiv.classList.add("form-check");
+                    checkboxesContainer.appendChild(tagItemDiv);
                 }
 
                 // Create pin
@@ -165,9 +180,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 spinnerContainer.style.display = "none";
             }
         })
-        .then (() => {
+        .then(() => {
             // Get all checked checkboxes
-            document.getElementById("checboxes_container").addEventListener("change", filterPins);
+            document.getElementById("checkboxes_container").addEventListener("change", filterPins);
+            countTags ();
         })
         .catch((error) => {
             // Handle any errors that occurred in any of the promises
@@ -180,12 +196,59 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Get all pin elements
         const pins = Array.from(document.querySelectorAll(".pin"));
 
-        const checkboxesId = checkedCheckboxes.map((checkbox) => {return "."+checkbox.id});
-        const checkboxesList = checkboxesId.join(",")
-        const selectedPins = document.querySelectorAll(checkboxesList);
+        const checkboxesIds = checkedCheckboxes.map((checkbox) => {
+            return "." + checkbox.id
+        });
 
-        // Show all pins initially
-        pins.forEach(pin => pin.style.display = "none");
-        selectedPins.forEach(pin => pin.style.display = "block");
+        if (checkboxesIds.length == 0) {
+            pins.forEach(pin => pin.style.display = "block");
+        } else {
+            const checkboxesList = checkboxesIds.join(",")
+            const selectedPins = document.querySelectorAll(checkboxesList);
+            pins.forEach(pin => pin.style.display = "none");
+            selectedPins.forEach(pin => pin.style.display = "block");
+        }
     }
+
+    function countTags () {
+        const visiblePinsTags = document.querySelectorAll('.pin:not([style="none"]) .tag');
+        const visiblePinsTagsArray = [...visiblePinsTags];
+        const tagsId = visiblePinsTagsArray.map((tag) => {return tag.id});
+
+        const tagsCount = tagsId.reduce((acc, id) => {
+            //const id = objet.id;
+            if (!acc[id]) {
+                acc[id] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
+            } else {
+                acc[id]++; // Incrémentez le compteur si le nom existe déjà
+            }
+            return acc;
+        }, {});
+
+        const tagOccurences = Object.entries(tagsCount).map(([id, occurrences]) => ({ id, occurrences }));
+        console.log (tagOccurences);
+
+        const labelElements = {}; // Stockez les références aux éléments <label> par ID
+
+        tagOccurences.forEach((tag) => {
+            const tagId = tag.id;
+            const tagLabel = labelElements[tagId]; // Récupérez l'élément <label> à partir du stockage
+            if (tagLabel) {
+                tagLabel.textContent = tagLabel.textContent + " (" + tag.occurrences + ")";
+            }
+        });
+
+        // Remplissez l'objet labelElements avec les références aux éléments <label> au préalable
+        tagOccurences.forEach((tag) => {
+            const tagLabelObject = document.querySelector('label[for="' + tag.id + '"]');
+            if (tagLabelObject) {
+                labelElements[tag.id] = tagLabelObject;
+            }
+        });
+            //pin.style.display = "block");
+
+
+    }
+
+
 });
