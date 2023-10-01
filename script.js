@@ -116,13 +116,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const [pinData, tagData] = results; // Corrected variable names
                 // Handle tags Data
                 const sortedTags = tagData.records.toSorted((a, b) => {
-                                            const nameA = a.fields.name.toLowerCase();
-                                            const nameB = b.fields.name.toLowerCase();
+                    const nameA = a.fields.name.toLowerCase();
+                    const nameB = b.fields.name.toLowerCase();
 
-                                            if (nameA < nameB) return -1;
-                                            if (nameA > nameB) return 1;
-                                            return 0;
-                                        });
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    return 0;
+                });
                 const checkboxesContainer = document.getElementById("checkboxes_container");
 
                 for (const tag of sortedTags) {
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 for (const record of pinData.records) {
                     if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
                         tagsData = record.fields.tags_name.map((tag_name, index) => ({
-                            tag_name: tag_name.replace(" ","&nbsp;"),
+                            tag_name: tag_name.replace(" ", "&nbsp;"),
                             tag_color: record.fields.tags_color[index],
                             tag_id: record.fields.tag[index]
                         }));
@@ -182,15 +182,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         })
         .then(() => {
             // Get all checked checkboxes
-            document.getElementById("checkboxes_container").addEventListener("change", filterPins);
-            countTags ();
+            //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
+            document.getElementById("checkboxes_container").addEventListener("change", filterPinsAnd);
+            countTags();
         })
         .catch((error) => {
             // Handle any errors that occurred in any of the promises
             console.error("An error occurred:", error);
         });
 
-    function filterPins() {
+    function filterPinsOr() {
         // Get all checked checkboxes
         const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
         // Get all pin elements
@@ -210,10 +211,49 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
     }
 
-    function countTags () {
+    function intersection(array1, array2) {
+        const set1 = new Set(array1);
+        const set2 = new Set(array2);
+        return [...set1].filter(element => set2.has(element));
+    }
+
+    function filterPinsAnd() {
+        // Get all checked checkboxes
+        const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
+        // Get all pin elements
+        const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
+
+        // Parcourez les cases à cocher pour obtenir les critères sélectionnés
+        const selectedCriteria = [];
+        checkedCheckboxes.forEach(function (checkbox) {
+                selectedCriteria.push(checkbox.id);
+            }
+        );
+
+        // Parcourez les éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
+        pins.forEach(function (pin) {
+            const tags = Array.from(pin.querySelectorAll(".tag"))
+            const tagsIds = tags.map(tag=>{return tag.id})
+            const tagsIntersection = intersection(tagsIds, selectedCriteria)
+            const shouldShow = tagsIntersection.length==selectedCriteria.length;
+ console.log(shouldShow);
+            // Affichez ou masquez l'élément .pin en fonction du résultat
+            if (shouldShow) {
+                pin.style.display = "block";
+            } else {
+                pin.style.display = "none";
+            }
+        });
+
+
+    }
+
+    function countTags() {
         const visiblePinsTags = document.querySelectorAll('.pin:not([style="none"]) .tag');
         const visiblePinsTagsArray = [...visiblePinsTags];
-        const tagsId = visiblePinsTagsArray.map((tag) => {return tag.id});
+        const tagsId = visiblePinsTagsArray.map((tag) => {
+            return tag.id
+        });
         const tagsCount = tagsId.reduce((acc, id) => {
             //const id = objet.id;
             if (!acc[id]) {
@@ -224,8 +264,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             return acc;
         }, {});
 
-        const tagOccurences = Object.entries(tagsCount).map(([id, occurrences]) => ({ id, occurrences }));
-        console.log (tagOccurences);
+        const tagOccurences = Object.entries(tagsCount).map(([id, occurrences]) => ({id, occurrences}));
+        console.log(tagOccurences);
 
         tagOccurences.forEach(tag => {
             const labelForId = tag.id;
@@ -233,8 +273,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             if (labelElement) {
                 // Mettre à jour le contenu textuel de l'objet label
-                labelElement.textContent = `${labelElement.textContent} (${tag.occurrences})`;
-                //labelElement.textContent = labelElement.textContent + " ("+tag.occurrences+")"`;
+                //labelElement.textContent = `${labelElement.textContent} (${tag.occurrences})`;
+                labelElement.textContent = labelElement.textContent + " (" + tag.occurrences + ")";
             }
         });
 
