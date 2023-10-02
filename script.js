@@ -137,7 +137,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     tagItemLabel.setAttribute('for', tag.id)
                     tagItemLabel.innerHTML = tag.fields.name;
-                    tagItemInput.name = tag.fields.name;
+                    tagItemLabel.setAttribute('name', tag.fields.name);
                     tagItemLabel.classList.add("form-check-label");
 
                     tagItemDiv.appendChild(tagItemInput);
@@ -183,7 +183,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         .then(() => {
             // Get all checked checkboxes
             //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
-            document.getElementById("checkboxes_container").addEventListener("change", filterPinsAnd);
+            document.getElementById("checkboxes_container").addEventListener("change",
+                async () => {
+                    await filterPinsAnd();
+                    countTags()
+                });
             countTags();
         })
         .catch((error) => {
@@ -217,7 +221,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return [...set1].filter(element => set2.has(element));
     }
 
-    function filterPinsAnd() {
+    async function filterPinsAnd() {
         // Get all checked checkboxes
         const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
         // Get all pin elements
@@ -233,10 +237,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         // Parcourez les éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
         pins.forEach(function (pin) {
             const tags = Array.from(pin.querySelectorAll(".tag"))
-            const tagsIds = tags.map(tag=>{return tag.id})
+            const tagsIds = tags.map(tag => {
+                return tag.id
+            })
             const tagsIntersection = intersection(tagsIds, selectedCriteria)
-            const shouldShow = tagsIntersection.length==selectedCriteria.length;
- console.log(shouldShow);
+            const shouldShow = tagsIntersection.length == selectedCriteria.length;
+            console.log(shouldShow);
             // Affichez ou masquez l'élément .pin en fonction du résultat
             if (shouldShow) {
                 pin.style.display = "block";
@@ -245,16 +251,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         });
 
-
     }
 
     function countTags() {
-        const visiblePinsTags = document.querySelectorAll('.pin:not([style="none"]) .tag');
+        //--
+        const visiblePinsTags = document.querySelectorAll('.pin:not([style*="display: none"]) .tag');
         const visiblePinsTagsArray = [...visiblePinsTags];
-        const tagsId = visiblePinsTagsArray.map((tag) => {
+        const visiblePinsTagsIds = visiblePinsTagsArray.map((tag) => {
             return tag.id
         });
-        const tagsCount = tagsId.reduce((acc, id) => {
+
+        const visiblePinsTagsCount = visiblePinsTagsIds.reduce((acc, id) => {
             //const id = objet.id;
             if (!acc[id]) {
                 acc[id] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
@@ -264,22 +271,41 @@ document.addEventListener("DOMContentLoaded", async function () {
             return acc;
         }, {});
 
-        const tagOccurences = Object.entries(tagsCount).map(([id, occurrences]) => ({id, occurrences}));
-        console.log(tagOccurences);
+        const visiblePinsTagsCountById = Object.entries(visiblePinsTagsCount).map(([id, count]) => ({id, count}));
+        //
+        const tagCheckboxesLabel = document.getElementsByClassName("form-check-label");
+        const tagCheckboxesLabelArray = [...tagCheckboxesLabel];
+        const tagCheckboxesLabelForAttribute = tagCheckboxesLabelArray.map(checkbox => {
+            return checkbox.getAttribute("for")
+        });
 
-        tagOccurences.forEach(tag => {
+        const allTagCheckboxesWithCount = tagCheckboxesLabelForAttribute.map((tagId1) => {
+            const idInVisiblePinsTagsCountById = visiblePinsTagsCountById.find((id) => id.id === tagId1);
+            return idInVisiblePinsTagsCountById ? {
+                id: idInVisiblePinsTagsCountById.id,
+                count: idInVisiblePinsTagsCountById.count
+            } : {id: tagId1, count: 0};
+        });
+
+
+        allTagCheckboxesWithCount.forEach(tag => {
             const labelForId = tag.id;
             const labelElement = document.querySelector(`label[for="${labelForId}"]`);
 
             if (labelElement) {
                 // Mettre à jour le contenu textuel de l'objet label
-                //labelElement.textContent = `${labelElement.textContent} (${tag.occurrences})`;
-                labelElement.textContent = labelElement.textContent + " (" + tag.occurrences + ")";
+                //labelElement.textContent = `${labelElement.textContent} (${tag.count})`;
+                if (tag.count == 0) {
+                    labelElement.classList.add("tagCount0");
+                    //labelElement.textContent = labelElement.getAttribute("name");
+                    labelElement.innerHTML=labelElement.getAttribute("name");
+                } else {
+                    labelElement.classList.remove("tagCount0");
+                    //labelElement.textContent = labelElement.getAttribute("name") + " (" + tag.count + ")";
+                    labelElement.innerHTML =  labelElement.getAttribute("name") + "<span class=\"tagCount\"> (" + tag.count + ")<\span>";
+                }
+
             }
         });
-
-
     }
-
-
 });

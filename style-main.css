@@ -183,3 +183,12 @@ a.article, a.article:hover {
         display: none;
     }
 }
+
+.tagCount0 {
+    font-style: italic;
+    opacity: 60%;
+}
+
+.tagCount {
+    font-size: 65%
+}
