@@ -18,7 +18,7 @@
     width: 7%;
 }
 
-.tag {
+#popupCarousel tag {
     align-self: flex-start;
     padding: .2em .7em;
     border-radius: 1em;
@@ -26,34 +26,34 @@
     color: #fafafa;
 }
 
-.tag + .tag {
+#popupCarousel .tag + .tag {
     margin-left: .35em;
 }
 
-.tag-blue {
+#popupCarousel .tag-blue {
     background: #56CCF2;
     background: linear-gradient(to bottom, #2F80ED, #56CCF2);
     color: #fafafa;
 }
 
-.tag-brown {
+#popupCarousel.tag-brown {
     background: #D1913C;
     color: #fafafa;
 }
 
-.tag-red {
+#popupCarousel .tag-red {
     background: #cb2d3e;
     color: #fafafa;
 }
 
 
-.card_footer {
+#popupCarousel .card_footer {
     display: flex;
     flex-direction: row;
     padding: 0rem 0.5rem;
 }
 
-.rating {
+#popupCarousel.rating {
     margin-top: 5px;
     margin-right: 3px;
     width: 50px;
@@ -66,7 +66,7 @@
 }
 
 
-.pencil {
+#popupCarousel .pencil {
     margin-top: 5px;
     margin-right: 3px;
     width: 20px;
@@ -78,7 +78,7 @@
     align-items: center;
 }
 
-.overflow-y-hidden {
+#popupCarousel .overflow-y-hidden {
     overflow-y: hidden;
 }
 

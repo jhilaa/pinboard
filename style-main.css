@@ -97,6 +97,13 @@ body .wrapper {
     background: #6d7fcc;
 }
 
+#sidebar .rating {
+    width: 100px;
+    height: 25px;
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
 
 a[data-toggle="collapse"] {
     position: relative;

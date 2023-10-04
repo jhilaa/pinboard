@@ -97,12 +97,14 @@
 
         <ul class="list-unstyled components">
 
-            <div class="rating position-relative d-flex">
-                <i class="star bi bi-star position-absolute top-50 start-0 translate-middle-y pb-1" data-value="1"></i>
-                <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1" data-value="2"></i>
-                <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1" data-value="3"></i>
-
+            <!--- <div class="rating position-relative d-flex"> -->
+            <div class="rating position-relative d-flex" filter_value="0">
+                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="1" style="left: 0%;"></i>
+                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="2" style="left: 25%;"></i>
+                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="3" style="left: 50%;"></i>
+                <i class="star gold bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="4" style="left: 75%;"></i>
             </div>
+
             <div id="checkboxes_container">
 
             </div>
@@ -163,13 +165,10 @@
                         <img src="https://source.unsplash.com/600x400/?tree" alt="pin_image" class="pin_image">
                         <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
                             <div class="rating position-relative d-flex rounded-pill">
-                                <i class="star bi bi-star position-absolute top-50 start-0 translate-middle-y pb-1"
-                                   data-value="1"></i>
-                                <i class="star bi bi-star position-absolute top-50 start-50 translate-middle pb-1"
-                                   data-value="2"></i>
-                                <i class="star bi bi-star position-absolute top-50 end-0 translate-middle-y pb-1"
-                                   data-value="3"></i>
-
+                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="1" style="left: 0%;"></i>
+                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="2" style="left: 25%;"></i>
+                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="3" style="left: 50%;"></i>
+                                <i class="star gold bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="4" style="left: 75%;"></i>
                             </div>
                             <div class="pencil position-relative d-flex rounded-circle">
                                 <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>

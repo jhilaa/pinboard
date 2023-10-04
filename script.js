@@ -4,11 +4,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         "Authorization": `Bearer ${token}`
     });
 
-    //** 1. on floute l'arrière-plan pendant les requêtes
+    //** on floute l'arrière-plan pendant les requêtes
     const spinnerContainer = document.getElementById("spinnerContainer"); // Define spinnerContainer here
     spinnerContainer.style.display = "block";
 
-    //** 2. Création des tuiles
+    //** Création des tuiles
     function createNewPin(pinModel, record, tagsData) {
         const clone = pinModel.cloneNode(true);
 
@@ -20,8 +20,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         clone.querySelector(".pin_header img").src = record.fields.img_url;
         clone.setAttribute("rating", record.fields.rating);
 
-        const stars = clone.querySelectorAll('.star');
-        stars.forEach((star, index) => {
+        const rating_stars = clone.querySelectorAll('.rating .star');
+        rating_stars.forEach((star, index) => {
             star.addEventListener('click', () => {
                 const old_value = parseInt(clone.getAttribute('rating'));
                 let new_value = parseInt(star.getAttribute('data-value'));
@@ -31,11 +31,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
                 clone.setAttribute("rating", new_value);
-                updateStars(stars, old_value, new_value);
+                updateStars(rating_stars, old_value, new_value);
             });
         });
 
-        updateStars(stars, 0, record.fields.rating);
+        updateStars(rating_stars, 0, record.fields.rating);
 
         const tags = clone.querySelector(".pin_body .tags");
         for (const tag of tagsData) {
@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return clone;
     }
 
-    //** 2. Création des tuiles
+    //** Création de la modale
     function createNewModal(modalModel, record, tagsData) {
         const clone = modalModel.cloneNode(true);
 
@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         return clone;
     }
 
+    //** gestion des étoiles
     function updateStars(stars, old_value, new_value) {
         stars.forEach((star, index) => {
             if (index <= new_value - 1) {
@@ -106,9 +107,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("Error fetching or processing data:", error);
         }
     }
-
     //** FIN DATA **********************
 
+
+    //** INITIALISATION ************************
     Promise.all([getPinData(), getTagData()])
         .then((results) => {
             try {
@@ -185,7 +187,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
             document.getElementById("checkboxes_container").addEventListener("change",
                 async () => {
-                    await filterPinsAnd();
+                    //await filterPinsAnd();
+                    await filterPins();
                     countTags()
                 });
             countTags();
@@ -195,6 +198,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("An error occurred:", error);
         });
 
+    //** FILTRE ******************************
     function filterPinsOr() {
         // Get all checked checkboxes
         const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
@@ -219,6 +223,48 @@ document.addEventListener("DOMContentLoaded", async function () {
         const set1 = new Set(array1);
         const set2 = new Set(array2);
         return [...set1].filter(element => set2.has(element));
+    }
+
+    async function filterPins() {
+        // les fiches
+        const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
+        // filtre sur les mots-clé
+        const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
+        // filtre sur la note
+        const ratingValue = parseInt(document.querySelector("#sidebar .rating").getAttribute("filter_value"));
+
+        // Parcours des cases à cocher pour obtenir les critères sélectionnés
+        const selectedCriteria = [];
+        checkedCheckboxes.forEach(function (checkbox) {
+                selectedCriteria.push(checkbox.id);
+            }
+        );
+
+        // Parcours des éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
+        pins.forEach(function (pin) {
+            // tag
+            const tags = Array.from(pin.querySelectorAll(".tag"))
+            const tagsIds = tags.map(tag => {
+                return tag.id
+            })
+            const tagsIntersection = intersection(tagsIds, selectedCriteria)
+            let toShow = tagsIntersection.length == selectedCriteria.length;
+
+            // note
+            const pinRating = parseInt(pin.getAttribute("rating"));
+            toShow = toShow && (pinRating == ratingValue)
+            //let toShow = (pinRating == ratingValue);
+
+            // Affichez ou masquez l'élément .pin en fonction du résultat
+            if (toShow) {
+                pin.style.display = "block";
+            } else {
+                pin.style.display = "none";
+            }
+        });
+
+        //mise à jour du nombre de fiches sur les tags
+        countTags()
     }
 
     async function filterPinsAnd() {
@@ -298,14 +344,34 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (tag.count == 0) {
                     labelElement.classList.add("tagCount0");
                     //labelElement.textContent = labelElement.getAttribute("name");
-                    labelElement.innerHTML=labelElement.getAttribute("name");
+                    labelElement.innerHTML = labelElement.getAttribute("name");
                 } else {
                     labelElement.classList.remove("tagCount0");
                     //labelElement.textContent = labelElement.getAttribute("name") + " (" + tag.count + ")";
-                    labelElement.innerHTML =  labelElement.getAttribute("name") + "<span class=\"tagCount\"> (" + tag.count + ")<\span>";
+                    labelElement.innerHTML = labelElement.getAttribute("name") + "<span class=\"tagCount\"> (" + tag.count + ")<\span>";
                 }
 
             }
         });
     }
+
+    //** gestion des événement pour les filtres
+    const filter_stars = document.querySelectorAll('#sidebar .star');
+    filter_stars.forEach((star, index) => {
+        star.addEventListener('click', (e) => {
+            e.preventDefault();
+            const rating_filter = e.target.closest(".rating");
+            const old_value = parseInt(rating_filter.getAttribute('filter_value'));
+            let new_value = parseInt(star.getAttribute('data-value'));
+
+            if (old_value === 1 && new_value === 1) {
+                new_value = 0;
+            }
+
+            document.querySelector("#sidebar .rating").setAttribute("filter_value", new_value);
+            updateStars(filter_stars, old_value, new_value);
+            filterPins();
+
+        });
+    });
 });
