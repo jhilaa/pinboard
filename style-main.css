@@ -24,8 +24,8 @@ body a, a:hover, a:focus {
     transition: all 0.3s;
 }
 
-body navbar {
-    padding: 2px 2px;
+body .navbar {
+    padding : 0px !important;
     background: #fff;
     border: none;
     border-radius: 0;
@@ -46,6 +46,14 @@ body .line {
     margin: 40px 0;
 }
 
+.container-fluid {
+    padding: 0px !important;
+}
+
+#content {
+    padding-top: 10px;
+}
+
 /* ---------------------------------------------------
     SIDEBAR STYLE
 ----------------------------------------------------- */
@@ -60,6 +68,11 @@ body .wrapper {
     background: #7386D5;
     color: #fff;
     transition: all 0.3s;
+    padding-left: 10px;
+}
+
+.form-check {
+    padding-left: 24px;!important
 }
 
 #sidebar.active {
@@ -67,8 +80,12 @@ body .wrapper {
 }
 
 #sidebar .sidebar-header {
-    padding: 20px;
+    padding-top: 10px;
     background: #6d7fcc;
+}
+
+#form-check {
+    padding-left: 0px;
 }
 
 #sidebar ul.components {
@@ -169,9 +186,13 @@ a.article, a.article:hover {
     CONTENT STYLE
 ----------------------------------------------------- */
 #content {
-    padding: 20px;
+    padding-left: 20px;
     min-height: 100vh;
     transition: all 0.3s;
+}
+
+container-fluid {
+
 }
 
 /* ---------------------------------------------------
