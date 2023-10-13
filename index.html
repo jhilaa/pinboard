@@ -98,11 +98,25 @@
         <ul class="list-unstyled components">
 
             <!--- <div class="rating position-relative d-flex"> -->
-            <div class="rating position-relative d-flex" filter_value="0">
-                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="1" style="left: 0%;"></i>
-                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="2" style="left: 25%;"></i>
-                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="3" style="left: 50%;"></i>
-                <i class="star gold bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="4" style="left: 75%;"></i>
+            <div style="display: flex;flex-direction: row;vertical-align: middle">
+                <select id="rating-operator" class="selectpicker" data-width="fit" name="star-select" id="star-select">
+                    <option value="1">></option>
+                    <option value="2" selected>&ge;</option>
+                    <option value="3">=</option>
+                    <option value="4">&le;</option>
+                    <option value="5"><</option>
+                </select>
+                <div class="rating position-relative d-flex" filter_value="0">
+                    <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="1"
+                       style="left: 0%;"></i>
+                    <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="2"
+                       style="left: 25%;"></i>
+                    <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="3"
+                       style="left: 50%;"></i>
+                    <i class="star gold bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="4"
+                       style="left: 75%;"></i>
+                </div>
+                <span id="starCount" >  </span>
             </div>
 
             <div id="checkboxes_container">
@@ -165,10 +179,14 @@
                         <img src="https://source.unsplash.com/600x400/?tree" alt="pin_image" class="pin_image">
                         <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
                             <div class="rating position-relative d-flex rounded-pill">
-                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="1" style="left: 0%;"></i>
-                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="2" style="left: 25%;"></i>
-                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="3" style="left: 50%;"></i>
-                                <i class="star gold bi bi-star position-absolute top-50 translate-middle-y pb-1" data-value="4" style="left: 75%;"></i>
+                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1"
+                                   data-value="1" style="left: 0%;"></i>
+                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1"
+                                   data-value="2" style="left: 25%;"></i>
+                                <i class="star bi bi-star position-absolute top-50 translate-middle-y pb-1"
+                                   data-value="3" style="left: 50%;"></i>
+                                <i class="star gold bi bi-star position-absolute top-50 translate-middle-y pb-1"
+                                   data-value="4" style="left: 75%;"></i>
                             </div>
                             <div class="pencil position-relative d-flex rounded-circle">
                                 <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>

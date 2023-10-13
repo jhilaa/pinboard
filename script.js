@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             console.error("Error fetching or processing data:", error);
         }
     }
+
     //** FIN DATA **********************
 
 
@@ -189,9 +190,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 async () => {
                     //await filterPinsAnd();
                     await filterPins();
-                    countTags()
+                    countPinsByTag();
+                    countPins();
                 });
-            countTags();
+            countPinsByTag();
+            countPins();
         })
         .catch((error) => {
             // Handle any errors that occurred in any of the promises
@@ -225,12 +228,31 @@ document.addEventListener("DOMContentLoaded", async function () {
         return [...set1].filter(element => set2.has(element));
     }
 
+    function ratingComparaison(pinRating, ratingValue, ratingOperator) {
+        if (ratingOperator == 1) {
+            return (pinRating > ratingValue)
+        }
+        if (ratingOperator == 2) {
+            return (pinRating >= ratingValue)
+        }
+        if (ratingOperator == 3) {
+            return (pinRating == ratingValue)
+        }
+        if (ratingOperator == 4) {
+            return (pinRating <= ratingValue)
+        }
+        if (ratingOperator == 5) {
+            return (pinRating < ratingValue)
+        }
+    }
+
     async function filterPins() {
         // les fiches
         const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
         // filtre sur les mots-clé
         const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
         // filtre sur la note
+        const ratingOperator = parseInt(document.getElementById("rating-operator").value);
         const ratingValue = parseInt(document.querySelector("#sidebar .rating").getAttribute("filter_value"));
 
         // Parcours des cases à cocher pour obtenir les critères sélectionnés
@@ -248,30 +270,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return tag.id
             })
             const pinRating = parseInt(pin.getAttribute("rating"));
-            let toShow;
+            const ratingTest = ratingComparaison(pinRating, ratingValue, ratingOperator);
+            const tagsIntersection = intersection(tagsIds, selectedCriteria)
 
-            if (selectedCriteria.length ==0) {
-                toShow =  (pinRating == ratingValue)
-            }
-            else {
-                const tagsIntersection = intersection(tagsIds, selectedCriteria)
-                toShow = tagsIntersection.length == selectedCriteria.length;
-
-                // note
-                toShow = toShow && (pinRating == ratingValue)
-            }
-            //let toShow = (pinRating == ratingValue);
-
-            // Affichez ou masquez l'élément .pin en fonction du résultat
-            if (toShow) {
+            if (tagsIntersection.length == selectedCriteria.length
+            && ratingTest) {
                 pin.style.display = "block";
             } else {
                 pin.style.display = "none";
             }
+
         });
 
         //mise à jour du nombre de fiches sur les tags
-        countTags()
+        countPinsByTag()
+        countPins();
     }
 
     async function filterPinsAnd() {
@@ -306,7 +319,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     }
 
-    function countTags() {
+    function countPins() {
+        const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
+        const visiblePinsTagsArray = [...visiblePins];
+
+        const starCountElement = document.getElementById("starCount");
+        starCountElement.textContent = "(" + visiblePinsTagsArray.length + ")";
+    }
+
+    function countPinsByTag() {
         //--
         const visiblePinsTags = document.querySelectorAll('.pin:not([style*="display: none"]) .tag');
         const visiblePinsTagsArray = [...visiblePinsTags];
@@ -314,6 +335,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return tag.id
         });
 
+        // pour les tags
         const visiblePinsTagsCount = visiblePinsTagsIds.reduce((acc, id) => {
             //const id = objet.id;
             if (!acc[id]) {
@@ -355,7 +377,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 } else {
                     labelElement.classList.remove("tagCount0");
                     //labelElement.textContent = labelElement.getAttribute("name") + " (" + tag.count + ")";
-                    labelElement.innerHTML = labelElement.getAttribute("name") + "<span class=\"tagCount\"> (" + tag.count + ")<\span>";
+                    labelElement.innerHTML = labelElement.getAttribute("name") + "<span class=\"tagCount\"> (" + tag.count + ")</span>";
                 }
 
             }
@@ -363,6 +385,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     //** gestion des événement pour les filtres
+    const rating_operator = document.getElementById("rating-operator");
+    rating_operator.addEventListener("change",
+        async () => {
+            //await filterPinsAnd();
+            await filterPins();
+            countPinsByTag();
+            countPins();
+    })
+
     const filter_stars = document.querySelectorAll('#sidebar .star');
     filter_stars.forEach((star, index) => {
         star.addEventListener('click', (e) => {

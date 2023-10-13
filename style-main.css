@@ -220,3 +220,15 @@ container-fluid {
 .tagCount {
     font-size: 65%
 }
+
+#starCount {
+    font-size: 65%;
+    margin-top: 9px;
+    margin-left: 5px;
+}
+
+.selectpicker {
+    border-radius: 7px;
+    height: 31px;
+    margin-right: 2px;
+}
