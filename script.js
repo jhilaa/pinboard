@@ -247,12 +247,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             const tagsIds = tags.map(tag => {
                 return tag.id
             })
-            const tagsIntersection = intersection(tagsIds, selectedCriteria)
-            let toShow = tagsIntersection.length == selectedCriteria.length;
-
-            // note
             const pinRating = parseInt(pin.getAttribute("rating"));
-            toShow = toShow && (pinRating == ratingValue)
+            let toShow;
+
+            if (selectedCriteria.length ==0) {
+                toShow =  (pinRating == ratingValue)
+            }
+            else {
+                const tagsIntersection = intersection(tagsIds, selectedCriteria)
+                toShow = tagsIntersection.length == selectedCriteria.length;
+
+                // note
+                toShow = toShow && (pinRating == ratingValue)
+            }
             //let toShow = (pinRating == ratingValue);
 
             // Affichez ou masquez l'élément .pin en fonction du résultat
