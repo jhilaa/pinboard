@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const rating_stars = clone.querySelectorAll('.rating .star');
         rating_stars.forEach((star, index) => {
-            star.addEventListener('click', () => {
+            star.addEventListener('click', (e) => {
                 const old_value = parseInt(clone.getAttribute('rating'));
                 let new_value = parseInt(star.getAttribute('data-value'));
 
@@ -31,11 +31,18 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
                 clone.setAttribute("rating", new_value);
-                updateStars(rating_stars, old_value, new_value);
+                updateStarsDisplay(rating_stars, old_value, new_value);
+
+                //const spinnerPinContainerElement = e.target.closest(".spinnerPinContainer");
+                const pinElement = e.target.closest(".pin");
+                const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
+                spinnerPinContainerElement.style.display="flex";
+
+
             });
         });
 
-        updateStars(rating_stars, 0, record.fields.rating);
+        updateStarsDisplay(rating_stars, 0, record.fields.rating);
 
         const tags = clone.querySelector(".pin_body .tags");
         for (const tag of tagsData) {
@@ -68,7 +75,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     //** gestion des étoiles
-    function updateStars(stars, old_value, new_value) {
+    function updateStarsDisplay(stars, old_value, new_value) {
         stars.forEach((star, index) => {
             if (index <= new_value - 1) {
                 star.classList.add('bi-star-fill');
@@ -407,7 +414,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             document.querySelector("#sidebar .rating").setAttribute("filter_value", new_value);
-            updateStars(filter_stars, old_value, new_value);
+            updateStarsDisplay(filter_stars, old_value, new_value);
             filterPins();
 
         });
