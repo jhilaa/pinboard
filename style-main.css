@@ -189,6 +189,7 @@ a.article, a.article:hover {
     width: inherit;
     height: inherit;
     display: flex;
+    display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1;
