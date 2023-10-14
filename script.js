@@ -8,6 +8,58 @@ document.addEventListener("DOMContentLoaded", async function () {
     const spinnerContainer = document.getElementById("spinnerContainer"); // Define spinnerContainer here
     spinnerContainer.style.display = "block";
 
+    async function updateRating(id, rating) {
+
+        method = "PATCH";
+        postData = {
+            "fields":{
+                "rating": rating.toString()
+        }
+                /*[
+                {
+                    "id": "recDiaTXO8FQXS7ft",
+                    "fields": {
+                        "name": "Update record - Airtable Web API",
+                        "rating": "3",
+                        "url": "https://airtable.com/developers/web/api/update-record",
+                        "mini_url": "airtable.com",
+                        "description": "lolly lol test",
+                        "img_url": "https://static.airtable.com/images/oembed/airtable.png",
+                        "tag": [
+                            "rec77OdJGxlP02pFt"
+                        ]
+                    }
+                }
+            ]*/
+                /*[{
+                "id": "recDiaTXO8FQXS7ft",
+                "fields": {
+                    "name": "title",
+                    "rating": 2,
+                    "url": "url",
+                    "mini_url": "url",
+                    "description": "comment",
+                    "img_url": "img_url",
+                    "tag": []
+                }
+            }]*/
+        }
+    try {
+        //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {
+        const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins/"+id, {
+            method: method,
+            headers: {
+                "Authorization": " Bearer " + token,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(postData)
+        });
+        const responseData = await response.json()
+        console.log(responseData)
+    } catch (error) {
+        console.error("Error making POST request:", error);
+    }}
+
     //** Création des tuiles
     function createNewPin(pinModel, record, tagsData) {
         const clone = pinModel.cloneNode(true);
@@ -22,7 +74,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         const rating_stars = clone.querySelectorAll('.rating .star');
         rating_stars.forEach((star, index) => {
-            star.addEventListener('click', (e) => {
+            star.addEventListener('click', async (e) => {
                 const old_value = parseInt(clone.getAttribute('rating'));
                 let new_value = parseInt(star.getAttribute('data-value'));
 
@@ -37,6 +89,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const pinElement = e.target.closest(".pin");
                 const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
                 spinnerPinContainerElement.style.display="flex";
+                await updateRating(pinElement.id,new_value);
+                spinnerPinContainerElement.style.display="none";
 
 
             });
