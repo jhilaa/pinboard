@@ -34,32 +34,14 @@
                 </div>
                 <div class="modal-body">
                     <!-- Bootstrap Carousel -->
-                    <div id="carouselExample" class="carousel slide" data-ride="carousel">
+                    <div id="carouselExample" class="carousel slide" data-ride="carousel" data-interval="false">
                         <div id="carousel-inner" class="carousel-inner">
                             <!-- Slide 0 -->
                             <div id="modal_0" class="carousel-item">
-                                <div>
+                                <div class="text-center">
                                     <p class="title">This is the first paragraph of Slide 1.</p>
-                                    <img src="" alt="Image 1">
+                                    <img class="carousel-img" src="" alt="Image 1">
                                     <p class="description">This is the second paragraph of Slide 1.</p>
-                                </div>
-                            </div>
-                            <!-- Slide 1 -->
-                            <div class="carousel-item active">
-                                <div>
-                                    <p>This is the first paragraph of Slide 1.</p>
-                                    <img src="https://st4.depositphotos.com/1579394/40049/i/1600/depositphotos_400498380-stock-photo-old-vintage-monochrome-photographs-sepia.jpg"
-                                         alt="Image 1 Alt Text">
-                                    <p>This is the second paragraph of Slide 1.</p>
-                                </div>
-                            </div>
-                            <!-- Slide 2 -->
-                            <div class="carousel-item">
-                                <div>
-                                    <p>This is the first paragraph of Slide 2.</p>
-                                    <img src="https://st3.depositphotos.com/2130737/16438/i/450/depositphotos_164384426-stock-photo-old-stone-spheres-or-kernels.jpg"
-                                         alt="Image 2 Alt Text">
-                                    <p>This is the second paragraph of Slide 2.</p>
                                 </div>
                             </div>
                             <!-- Add more slides as needed -->
@@ -135,12 +117,9 @@
                 <div class="navbar-header">
                     <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
                         <i class="glyphicon glyphicon-align-left"></i>
-                        <span>Pinboard Wizard</span>
+                        <span><i class="bi bi-filter"></i></span>
                     </button>
                     <!-- Button to trigger the popup -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#popupCarousel">Open
-                        Popup
-                    </button>
                 </div>
 
             </div>
@@ -167,7 +146,10 @@
                                    data-value="4" style="left: 75%;"></i>
                             </div>
                             <div class="pencil position-relative d-flex rounded-circle">
-                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1"></i>
+                                <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1 "data-toggle="modal" data-target="#popupCarousel"></i>
+                               <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#popupCarousel">Open
+                                    Popup
+                                </button>-->
                             </div>
                         </div>
 
@@ -188,7 +170,6 @@
 </div>
 <!-- Grey Background Overlay -->
 <div id="overlay"></div>
-</div>
 
 
 <!-- jQuery CDN -->

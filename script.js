@@ -12,53 +12,54 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         method = "PATCH";
         postData = {
-            "fields":{
+            "fields": {
                 "rating": rating.toString()
-        }
-                /*[
-                {
-                    "id": "recDiaTXO8FQXS7ft",
-                    "fields": {
-                        "name": "Update record - Airtable Web API",
-                        "rating": "3",
-                        "url": "https://airtable.com/developers/web/api/update-record",
-                        "mini_url": "airtable.com",
-                        "description": "lolly lol test",
-                        "img_url": "https://static.airtable.com/images/oembed/airtable.png",
-                        "tag": [
-                            "rec77OdJGxlP02pFt"
-                        ]
-                    }
-                }
-            ]*/
-                /*[{
+            }
+            /*[
+            {
                 "id": "recDiaTXO8FQXS7ft",
                 "fields": {
-                    "name": "title",
-                    "rating": 2,
-                    "url": "url",
-                    "mini_url": "url",
-                    "description": "comment",
-                    "img_url": "img_url",
-                    "tag": []
+                    "name": "Update record - Airtable Web API",
+                    "rating": "3",
+                    "url": "https://airtable.com/developers/web/api/update-record",
+                    "mini_url": "airtable.com",
+                    "description": "lolly lol test",
+                    "img_url": "https://static.airtable.com/images/oembed/airtable.png",
+                    "tag": [
+                        "rec77OdJGxlP02pFt"
+                    ]
                 }
-            }]*/
+            }
+        ]*/
+            /*[{
+            "id": "recDiaTXO8FQXS7ft",
+            "fields": {
+                "name": "title",
+                "rating": 2,
+                "url": "url",
+                "mini_url": "url",
+                "description": "comment",
+                "img_url": "img_url",
+                "tag": []
+            }
+        }]*/
         }
-    try {
-        //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {
-        const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins/"+id, {
-            method: method,
-            headers: {
-                "Authorization": " Bearer " + token,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(postData)
-        });
-        const responseData = await response.json()
-        console.log(responseData)
-    } catch (error) {
-        console.error("Error making POST request:", error);
-    }}
+        try {
+            //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {
+            const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins/" + id, {
+                method: method,
+                headers: {
+                    "Authorization": " Bearer " + token,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(postData)
+            });
+            const responseData = await response.json()
+            console.log(responseData)
+        } catch (error) {
+            console.error("Error making POST request:", error);
+        }
+    }
 
     //** Création des tuiles
     function createNewPin(pinModel, record, tagsData) {
@@ -71,6 +72,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         clone.querySelector(".pin_body .url").href = record.fields.url;
         clone.querySelector(".pin_header img").src = record.fields.img_url;
         clone.setAttribute("rating", record.fields.rating);
+
+        const pencil_button = clone.querySelector(".bi-pencil")
+        pencil_button.addEventListener("click", (e) => {
+            const pinElement = e.target.closest(".pin");
+            const carouselItemActive = document.querySelector(".carousel-item.active");
+            const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
+            if (carouselItemActive !== null) {
+                carouselItemActive.classList.remove("active");
+            }
+            if (carouselItem !== null) {
+                carouselItem.classList.add("active");
+            }
+        })
 
         const rating_stars = clone.querySelectorAll('.rating .star');
         rating_stars.forEach((star, index) => {
@@ -88,9 +102,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 //const spinnerPinContainerElement = e.target.closest(".spinnerPinContainer");
                 const pinElement = e.target.closest(".pin");
                 const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
-                spinnerPinContainerElement.style.display="flex";
-                await updateRating(pinElement.id,new_value);
-                spinnerPinContainerElement.style.display="none";
+                spinnerPinContainerElement.style.display = "flex";
+                await updateRating(pinElement.id, new_value);
+                spinnerPinContainerElement.style.display = "none";
 
 
             });
@@ -210,7 +224,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     checkboxesContainer.appendChild(tagItemDiv);
                 }
 
-                // Create pin
+                // Create pin and modal
                 const pinContainer = document.getElementById("pin_container");
                 const pinModel = document.getElementById("pin_0");
 
@@ -263,6 +277,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         });
 
     //** FILTRE ******************************
+    /*
     function filterPinsOr() {
         // Get all checked checkboxes
         const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
@@ -282,6 +297,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             selectedPins.forEach(pin => pin.style.display = "block");
         }
     }
+    */
 
     function intersection(array1, array2) {
         const set1 = new Set(array1);
@@ -335,7 +351,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const tagsIntersection = intersection(tagsIds, selectedCriteria)
 
             if (tagsIntersection.length == selectedCriteria.length
-            && ratingTest) {
+                && ratingTest) {
                 pin.style.display = "block";
             } else {
                 pin.style.display = "none";
@@ -370,11 +386,14 @@ document.addEventListener("DOMContentLoaded", async function () {
             const tagsIntersection = intersection(tagsIds, selectedCriteria)
             const shouldShow = tagsIntersection.length == selectedCriteria.length;
             console.log(shouldShow);
+            const slide=document.querySelector("#"+pin.id+".carousel-item");
             // Affichez ou masquez l'élément .pin en fonction du résultat
             if (shouldShow) {
                 pin.style.display = "block";
+                slide.classList.remove("d-none");
             } else {
                 pin.style.display = "none";
+                slide.classList.add("d-none");
             }
         });
 
@@ -453,7 +472,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             await filterPins();
             countPinsByTag();
             countPins();
-    })
+        })
 
     const filter_stars = document.querySelectorAll('#sidebar .star');
     filter_stars.forEach((star, index) => {
