@@ -87,6 +87,19 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         })
 
+        const eye_button = clone.querySelector(".bi-eye")
+        eye_button.addEventListener("click", (e) => {
+            const pinElement = e.target.closest(".pin");
+            const carouselItemActive = document.querySelector(".carousel-item.active");
+            const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
+            if (carouselItemActive !== null) {
+                carouselItemActive.classList.remove("active");
+            }
+            if (carouselItem !== null) {
+                carouselItem.classList.add("active");
+            }
+        })
+
         const rating_stars = clone.querySelectorAll('.rating .star');
         rating_stars.forEach((star, index) => {
             star.addEventListener('click', async (e) => {
