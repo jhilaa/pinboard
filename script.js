@@ -100,8 +100,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         })
 
-        const rating_stars = clone.querySelectorAll('.rating .star');
-        rating_stars.forEach((star, index) => {
+        const pin_rating_stars = clone.querySelectorAll('.pin .rating .star');
+        pin_rating_stars.forEach((star, index) => {
             star.addEventListener('click', async (e) => {
                 const old_value = parseInt(clone.getAttribute('rating'));
                 let new_value = parseInt(star.getAttribute('data-value'));
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
 
                 clone.setAttribute("rating", new_value);
-                updateStarsDisplay(rating_stars, old_value, new_value);
+                updateStarsDisplay(pin_rating_stars, old_value, new_value);
 
                 //const spinnerPinContainerElement = e.target.closest(".spinnerPinContainer");
                 const pinElement = e.target.closest(".pin");
@@ -124,7 +124,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
         });
 
-        updateStarsDisplay(rating_stars, 0, record.fields.rating);
+        updateStarsDisplay(pin_rating_stars, 0, record.fields.rating);
+
 
         const tags = clone.querySelector(".pin_body .tags");
         for (const tag of tagsData) {
@@ -152,9 +153,31 @@ document.addEventListener("DOMContentLoaded", async function () {
         const modalDivText =document.createElement("div");
         modalDivText.classList.add("text-center");
 
+        const modalDivTitleBlock =document.createElement("div");
+        modalDivTitleBlock.classList.add("d-flex", "flex-row", "justify-content-center");
+
         const modalDivTitle =document.createElement("p");
         modalDivTitle.classList.add("title");
         modalDivTitle.textContent = record.fields.name;
+
+        const modalDivRating =document.createElement("div");
+        modalDivRating.classList.add("d-flex", "flex-row", "ml-2");
+
+        for (let i = 1; i <= 4; i++) {
+            const star = document.createElement("p");
+            star.classList.add("bi", "bi-star", "star")
+            if (i == 4) {
+                star.classList.add("gold");
+            }
+            if (record.fields.rating >=i) {
+                star.classList.add("bi-star-fill");
+                star.classList.remove("bi-star");
+            }
+            modalDivRating.appendChild(star)
+        }
+
+        const modal_rating_stars = modalDivRating.querySelectorAll('bi-star');
+        updateStarsDisplay(modal_rating_stars, 0, record.fields.rating);
 
         const modalDivImg =document.createElement("img");
         modalDivImg.classList.add("carousel-img");
@@ -164,7 +187,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         ModalDivDescription.classList.add("description");
         ModalDivDescription.textContent = record.fields.description;
 
-        modalDivText.appendChild(modalDivTitle);
+        modalDivTitleBlock.appendChild(modalDivTitle);
+        modalDivTitleBlock.appendChild(modalDivRating);
+
+        modalDivText.appendChild(modalDivTitleBlock);
         modalDivText.appendChild(modalDivImg);
         modalDivText.appendChild(ModalDivDescription);
         modalCarouselItem.appendChild(modalDivText)
