@@ -1,0 +1,108 @@
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap");
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+.modal-header {
+    padding: 0.5rem 0.7rem;
+}
+
+.carousel-control-next, .carousel-control-prev {
+    background: black;
+    opacity: 0.2;
+    width: 7%;
+}
+
+#popupCarousel tag {
+    align-self: flex-start;
+    padding: .2em .7em;
+    border-radius: 1em;
+    font-size: .55rem;
+    color: #fafafa;
+}
+
+#popupCarousel .tag + .tag {
+    margin-left: .35em;
+}
+
+#popupCarousel .tag-blue {
+    background: #56CCF2;
+    background: linear-gradient(to bottom, #2F80ED, #56CCF2);
+    color: #fafafa;
+}
+
+#popupCarousel.tag-brown {
+    background: #D1913C;
+    color: #fafafa;
+}
+
+#popupCarousel .tag-red {
+    background: #cb2d3e;
+    color: #fafafa;
+}
+
+
+#popupCarousel .card_footer {
+    display: flex;
+    flex-direction: row;
+    padding: 0rem 0.5rem;
+}
+
+#popupCarousel.rating {
+    margin-top: 5px;
+    margin-right: 3px;
+    width: 50px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.75);
+    padding: 2px;
+
+    display: flex;
+    align-items: center;
+}
+
+
+#popupCarousel .pencil {
+    margin-top: 5px;
+    margin-right: 3px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.75);
+    padding: 2px;
+
+    display: flex;
+    align-items: center;
+}
+
+#popupCarousel .overflow-y-hidden {
+    overflow-y: hidden;
+}
+
+#popupCarousel .carousel-img {
+    max-width: 100%;
+    max-height: 100px
+}
+
+#popupCarousel .star {
+    position: relative;;
+    font-size: 20px !important;
+    top: -6px
+}
+
+#popupCarousel .star.gold {
+    color: gold;
+}
+
+
+#popupCarousel .title {
+    font-size: larger;
+    margin-right: 8px;
+}
+
+
+
+
