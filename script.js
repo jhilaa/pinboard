@@ -16,34 +16,30 @@ document.addEventListener("DOMContentLoaded", async function () {
                 "fields": {
                     "rating": rating.toString()
                 }
-                /*[
-                {
-                    "id": "recDiaTXO8FQXS7ft",
-                    "fields": {
-                        "name": "Update record - Airtable Web API",
-                        "rating": "3",
-                        "url": "https://airtable.com/developers/web/api/update-record",
-                        "mini_url": "airtable.com",
-                        "description": "lolly lol test",
-                        "img_url": "https://static.airtable.com/images/oembed/airtable.png",
-                        "tag": [
-                            "rec77OdJGxlP02pFt"
-                        ]
-                    }
-                }
-            ]*/
-                /*[{
-                "id": "recDiaTXO8FQXS7ft",
+            }
+            try {
+                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {
+                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins/" + id, {
+                    method: method,
+                    headers: {
+                        "Authorization": " Bearer " + token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(postData)
+                });
+                const responseData = await response.json()
+                console.log(responseData)
+            } catch (error) {
+                console.error("Error making POST request:", error);
+            }
+        }
+
+        async function updateStatus(id, status) {
+            method = "PATCH";
+            postData = {
                 "fields": {
-                    "name": "title",
-                    "rating": 2,
-                    "url": "url",
-                    "mini_url": "url",
-                    "description": "comment",
-                    "img_url": "img_url",
-                    "tag": []
+                    "status": status.toString()
                 }
-            }]*/
             }
             try {
                 //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {
@@ -73,9 +69,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             clone.querySelector(".pin_body .url").href = record.fields.url;
             clone.querySelector(".pin_header img").src = record.fields.img_url;
             clone.setAttribute("rating", record.fields.rating);
+            clone.setAttribute("status", record.fields.status);
 
-            const pencil_button = clone.querySelector(".bi-pencil")
-            pencil_button.addEventListener("click", (e) => {
+
+            const pin_header = clone.querySelector(".pin_header")
+            pin_header.addEventListener("click", (e) => {
                 const pinElement = e.target.closest(".pin");
                 const carouselItemActive = document.querySelector(".carousel-item.active");
                 const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
@@ -87,8 +85,35 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             })
 
-            const eye_button = clone.querySelector(".bi-eye")
-            eye_button.addEventListener("click", (e) => {
+            const pin_status = clone.querySelector(".pin_status")
+            if (record.fields.status=="0") {
+                pin_status.classList.add("bi-exclamation-circle");
+            }
+            else {
+                pin_status.classList.remove("bi-exclamation-circle");
+            }
+
+            pin_status.addEventListener("click", async (e) => {
+                e.stopPropagation();
+                const pinElement = e.target.closest(".pin");
+                const previous_status = pinElement.getAttribute("status");
+                let new_status;
+                if (previous_status =="0") {
+                    new_status = 1;
+                    pinElement.setAttribute("status","1");
+                    pin_status.classList.remove("bi-exclamation-circle");
+                }
+                else {
+                    new_status = 0;
+                    pinElement.setAttribute("status","0");
+                    pin_status.classList.add("bi-exclamation-circle");
+                }
+
+                const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
+                spinnerPinContainerElement.style.display = "flex";
+                await updateStatus(pinElement.id, new_status);
+                spinnerPinContainerElement.style.display = "none";
+                /*
                 const pinElement = e.target.closest(".pin");
                 const carouselItemActive = document.querySelector(".carousel-item.active");
                 const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
@@ -98,11 +123,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (carouselItem !== null) {
                     carouselItem.classList.add("active");
                 }
+                */
             })
 
             const pin_rating_stars = clone.querySelectorAll('.pin .rating .star');
             pin_rating_stars.forEach((star, index) => {
                 star.addEventListener('click', async (e) => {
+                    e.stopPropagation()
                     const old_value = parseInt(clone.getAttribute('rating'));
                     let new_value = parseInt(star.getAttribute('data-value'));
 
@@ -213,7 +240,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** PIN DATA ******************************
         async function getPinData() {
             try {
-                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins?view=Grid%20view", {headers});
+                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
@@ -232,6 +259,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     description: pinObject.querySelector(".description").textContent,
                     img_url: pinObject.querySelector(".pin_image").src,
                     rating: pinObject.getAttribute('rating'),
+                    status: pinObject.getAttribute('status'),
                     tags: []
                 }
 
@@ -302,8 +330,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 const clonedPin = createPin(pinModel, record, tagsData);
                 pinContainer.appendChild(clonedPin);
-
-
             }
         }
 

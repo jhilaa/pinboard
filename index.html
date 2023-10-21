@@ -93,6 +93,10 @@
                 <span id="starCount">  </span>
             </div>
 
+            <div id="input_field">
+            <input type="text" id="text-input" name="text-input" placeholder="recherche dans le texte" maxlength="21" size="21"/>
+            </div>
+
             <div id="checkboxes_container">
 
             </div>
@@ -107,9 +111,10 @@
             <div class="container-fluid">
 
                 <div class="navbar-header">
-                    <button type="button" id="sidebarCollapse" class="btn btn-info navbar-btn">
+                    <button type="button" id="sidebarCollapses" class="btn btn-info navbar-btn">
+                    <!--<button type="button" id="sidebarNoCollapse" class="btn btn-info navbar-btn">-->
                         <i class="glyphicon glyphicon-align-left"></i>
-                        <span><i class="bi bi-filter"></i></span>
+                        <span><!--<i class="bi bi-filter"></i>-->Filtres</span>
                     </button>
                     <!-- Button to trigger the popup -->
                 </div>
@@ -118,13 +123,13 @@
         </nav>
         <div id="pin_grid">
             <div id="pin_container">
-                <div class="pin" id="pin_0" rating="0" style="display:none">
+                <div class="pin" id="pin_0" rating="0" status="0" style="display:none">
                     <div class="spinnerPinContainer" style="display:none">
                         <div class="spinner-border text-secondary" role="status">
                             <span class="sr-only"></span>
                         </div>
                     </div>
-                    <div class="pin_header position-relative d-flex">
+                    <div class="pin_header position-relative d-flex "data-toggle="modal" data-target="#popupCarousel">
                         <img src="https://source.unsplash.com/600x400/?tree" alt="pin_image" class="pin_image">
                         <div class="action position-absolute top-0 start-0 w-100 d-flex justify-content-between px-1">
                             <div class="rating position-relative d-flex rounded-pill">
@@ -138,15 +143,9 @@
                                    data-value="4" style="left: 75%;"></i>
                             </div>
                             <div class="position-relative d-flex">
-                                <div class="new position-relative d-flex rounded-circle">
-                                    <i class="bi bi-bell position-absolute top-50 start-50 translate-middle pb-1 "data-toggle="modal" data-target="#popupCarousel"></i>
-                                </div>
-                                <div class="pencil position-relative d-flex rounded-circle">
-                                    <i class="bi bi-pencil position-absolute top-50 start-50 translate-middle pb-1 "data-toggle="modal" data-target="#popupCarousel"></i>
-                                </div>
-                                <div class="eye position-relative d-flex rounded-circle">
-                                    <i class="bi bi-eye position-absolute top-50 start-50 translate-middle pb-1 "data-toggle="modal" data-target="#popupCarousel"></i>
-                                </div>
+                            <div class="pin_status bi-exclamation-circle position-relative d-flex rounded-circle">
+                                <i class="bi position-absolute top-50 start-50 translate-middle pb-1"></i>
+                            </div>
                             </div>
                         </div>
 
@@ -174,7 +173,7 @@
 <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $('#sidebarCollapse').on('click', function () {
+        $('#sidebarCollapses').on('click', function () {
             $('#sidebar').toggleClass('active');
         });
     });

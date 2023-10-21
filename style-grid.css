@@ -141,14 +141,6 @@
     color: gold;
 }
 
-#pin_grid .new {
-    margin-top: 5px;
-    margin-right: 3px;
-    width: 20px;
-    height: 20px;
-    background-color: rgba(255, 255, 255, 0.75);
-    padding: 2px;
-}
 
 #pin_grid .pencil {
     margin-top: 5px;
@@ -159,12 +151,12 @@
     padding: 2px;
 }
 
-#pin_grid .eye {
+#pin_grid .pin_status {
     margin-top: 5px;
     margin-right: 3px;
     width: 20px;
     height: 20px;
-    background-color: rgba(255, 75, 75, 1);
+    background-color: rgba(255, 255, 255, 0.75);
     padding: 2px;
 }
 
