@@ -86,7 +86,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             })
 
             const pin_status = clone.querySelector(".pin_status")
-            if (record.fields.status=="0") {
+            if (record.fields.status==undefined) {
+                pin_status.classList.add("bi-exclamation-circle");
+            }
+            if (record.fields.status=="0" || record.fields.status=="") {
                 pin_status.classList.add("bi-exclamation-circle");
             }
             else {

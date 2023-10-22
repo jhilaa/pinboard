@@ -121,6 +121,14 @@ body .wrapper {
     margin-bottom: 10px;
 }
 
+#sidebar #text-input {
+    font-size: 15px;
+    outline-offset: 0px;
+    max-width: 80%;
+}
+
+
+
 
 a[data-toggle="collapse"] {
     position: relative;
