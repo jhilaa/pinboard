@@ -243,7 +243,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** PIN DATA ******************************
         async function getPinData() {
             try {
-                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {headers});
+                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {headers});
+                const response = await fetch("https://pinboard-wizard.glitch.me/api");
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
