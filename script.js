@@ -1,8 +1,8 @@
 document.addEventListener("DOMContentLoaded", async function () {
         const token = "pateoiLGxeeOa1bbO.7d97dd01a0d5282f7e4d3b5fff9c9e10d2023d3a34b1811e1152a97182c2238d"; // Replace with your Bearer Token
         const headers = new Headers({
-            "Authorization": `Bearer ${token}`
-        });
+            "Authorization": `Bearer ${token}`,
+         });
 
         //** on floute l'arrière-plan pendant les requêtes
         const spinnerContainer = document.getElementById("spinnerContainer"); // Define spinnerContainer here
@@ -243,8 +243,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** PIN DATA ******************************
         async function getPinData() {
             try {
-                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {headers});
-                const response = await fetch("https://pinboard-wizard.glitch.me/api");
+                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {headers});
+                //const response = await fetch("https://pinboard-hqnx.onrender.com/api/pins", {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
@@ -273,7 +273,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** TAG DATA ******************************
         async function getTagData() {
             try {
-                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags?view=Grid%20view", {headers});
+                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags", {headers});
+                //const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
@@ -357,6 +358,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 //** INITIALISATION ************************
+        //Promise.all([getPinData(), getTagData()])
         Promise.all([getPinData(), getTagData()])
             .then(async (results) => {
                 try {
