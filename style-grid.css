@@ -164,4 +164,37 @@
     overflow-y: hidden;
 }
 
+.link_container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0.2em;
+    margin-right: 0.2em;
+}
 
+.link-icon {
+    top: -4px;
+    position: relative;
+    font-size: 15px;
+    color: #949494;
+}
+
+.bi-funnel, .bi-funnel-fill {
+    left : -4.5px;
+    font-size : 10px;
+    left: -3.5px;
+    top: 2px;
+}
+
+.bi-funnel-fill {
+    color: #5c5c5c; !important;
+}
+
+.link-icon:hover  {
+    cursor: pointer !important;
+}
+
+.url {
+    position: relative;
+    left: -1px;
+}
