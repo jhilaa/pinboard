@@ -318,10 +318,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (nameA > nameB) return 1;
                 return 0;
             });
-            const checkboxesContainer = document.getElementById("checkboxes_container");
+            const tagCheckboxesList = document.getElementById("tag_checkboxes_list");
 
             for (const tag of sortedTags) {
-                const tagItemDiv = document.createElement("div");
+                const tagItemDiv = document.createElement("li");
                 const tagItemInput = document.createElement("input");
                 const tagItemLabel = document.createElement("label");
                 tagItemInput.classList.add("form-check-input");
@@ -338,7 +338,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 tagItemDiv.appendChild(tagItemInput);
                 tagItemDiv.appendChild(tagItemLabel);
                 tagItemDiv.classList.add("form-check");
-                checkboxesContainer.appendChild(tagItemDiv);
+                tagCheckboxesList.appendChild(tagItemDiv);
             }
         }
 
@@ -405,7 +405,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             .then(() => {
                 // Get all checked checkboxes
                 //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
-                document.getElementById("checkboxes_container").addEventListener("change",
+                document.getElementById("tag_checkboxes_container").addEventListener("change",
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
