@@ -481,7 +481,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             tags.forEach((tag) => {
                 tagsLabel.concat(tag.name);
             })
-            const concatLabels = name.concat(url, description, tagsLabel);
+            const concatLabels = (name.concat(url, description, tagsLabel)).toLowerCase();
 
             if (text == "" || text == undefined || concatLabels == "") {
                 return true
