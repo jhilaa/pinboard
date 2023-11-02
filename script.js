@@ -70,9 +70,9 @@ document.addEventListener("DOMContentLoaded", async function () {
             clone.querySelector(".pin_header img").src = record.fields.img_url;
             clone.setAttribute("rating", record.fields.rating);
             clone.setAttribute("status", record.fields.status);
+            clone.setAttribute("mini_url", record.fields.mini_url);
 
-
-            const pin_header = clone.querySelector(".pin_header")
+            const pin_header = clone.querySelector(".pin_header");
             pin_header.addEventListener("click", (e) => {
                 const pinElement = e.target.closest(".pin");
                 const carouselItemActive = document.querySelector(".carousel-item.active");
@@ -129,6 +129,28 @@ document.addEventListener("DOMContentLoaded", async function () {
                 */
             })
 
+            const globe = clone.querySelector(".bi-globe");
+            globe.addEventListener("click", (e) => {
+                const pinElement = e.target.closest(".pin");
+                const mini_url_attribute = pinElement.getAttribute("mini_url");
+                const mini_url_input = document.getElementById("mini-url-input");
+
+                if (mini_url_input.value == mini_url_attribute) {
+                    mini_url_input.value = "";
+                }
+                else {
+                    mini_url_input.value = mini_url_attribute;
+                }
+                /******************/
+                const event = new Event('change', {
+                    bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                    cancelable: true // Permet d'annuler l'événement si nécessaire.
+                });
+                // Déclenchez l'événement sur l'élément input.
+                mini_url_input.dispatchEvent(event);
+            })
+
+
             const pin_rating_stars = clone.querySelectorAll('.pin .rating .star');
             pin_rating_stars.forEach((star, index) => {
                 star.addEventListener('click', async (e) => {
@@ -149,7 +171,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     spinnerPinContainerElement.style.display = "flex";
                     await updateRating(pinElement.id, new_value);
                     spinnerPinContainerElement.style.display = "none";
-
 
                 });
             });
@@ -403,6 +424,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPins();
                     }
                 )
+
+                document.getElementById("text-input").addEventListener("change",
+                    async () => {
+                        await filterPins();
+                        countPinsByTag();
+                        countPins();
+                    }
+                )
+
+                document.getElementById("mini-url-input").addEventListener("change",
+                    async () => {
+                        await filterPins();
+                        countPinsByTag();
+                        countPins();
+                    }
+                )
             })
             .catch((error) => {
                 // Handle any errors that occurred in any of the promises
@@ -458,6 +495,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function filterPins() {
             // les fiches
             const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
+            // filtre sur l'url
+            const miniUrlInputValue = document.getElementById("mini-url-input").value;
             // filtre sur les mots-clé
             const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
             // filtre sur la note
@@ -483,13 +522,23 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const ratingTest = ratingComparaison(pinRating, ratingValue, ratingOperator);
                 const tagsIntersection = intersection(tagsIds, selectedCriteria)
                 const inputTextFound = searchInputText(textInputValue.toLowerCase(), pin);
+                const miniUrlMatch =(miniUrlInputValue=="" || pin.getAttribute("mini_url") == miniUrlInputValue);
 
 
                 if (tagsIntersection.length == selectedCriteria.length
-                    && ratingTest && inputTextFound) {
+                    && ratingTest && inputTextFound && miniUrlMatch) {
                     pin.style.display = "block";
                 } else {
                     pin.style.display = "none";
+                }
+
+                if (miniUrlInputValue != "") {
+                    pin.querySelector(".funnel").classList.add("bi-funnel-fill");
+                    pin.querySelector(".funnel").classList.remove("bi-funnel");
+                }
+                else {
+                    pin.querySelector(".funnel").classList.remove("bi-funnel-fill");
+                    pin.querySelector(".funnel").classList.add("bi-funnel");
                 }
 
             });

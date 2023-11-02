@@ -97,6 +97,10 @@
                 <input type="search" id="text-input" name="text-input" placeholder="recherche"/>
             </div>
 
+            <div id="mini_url_input_field" class="d-none">
+                <input type="text" id="mini-url-input" name="mini-url-input" value=""/>
+            </div>
+
             <div id="checkboxes_container">
 
             </div>
@@ -123,7 +127,7 @@
         </nav>
         <div id="pin_grid">
             <div id="pin_container">
-                <div class="pin" id="pin_0" rating="0" status="0" style="display:none">
+                <div class="pin" id="pin_0" rating="0" status="0" mini_url="" style="display:none">
                     <div class="spinnerPinContainer" style="display:none">
                         <div class="spinner-border text-secondary" role="status">
                             <span class="sr-only"></span>
@@ -155,8 +159,10 @@
                         </div>
                         <h4 class="name">Tribean</h4>
                         <div class="link_container">
-                            <i class="bi link-icon bi-globe"></i>
-                            <i class="bi link-icon bi-funnel"></i>
+                            <div class="globe">
+                                <i class="bi link-icon bi-globe"></i>
+                                <i class="bi link-icon funnel bi-funnel"></i>
+                            </div>
                             <a class="url" href="" target="_blank">url</a>
                         </div>
                         <p class="description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Sequi

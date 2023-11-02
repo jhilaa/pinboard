@@ -172,6 +172,11 @@
     margin-right: 0.2em;
 }
 
+.globe {
+    display: flex;
+    flex-direction: row;
+}
+
 .link-icon {
     top: -4px;
     position: relative;
@@ -180,15 +185,15 @@
 }
 
 .bi-funnel, .bi-funnel-fill {
-    left : -4.5px;
-    font-size : 10px;
+    font-size: 10px;
     left: -3.5px;
-    top: 2px;
+    top: 4.5px;
 }
 
 .bi-funnel-fill {
     color: #5c5c5c; !important;
 }
+
 
 .link-icon:hover  {
     cursor: pointer !important;
