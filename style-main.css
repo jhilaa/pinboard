@@ -75,6 +75,13 @@ body .wrapper {
     padding-left: 24px;!important
 }
 
+#url_radios_list .form-check-label {
+    width: -webkit-fill-available;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /*white-space: nowrap;*/
+}
+
 #sidebar.active {
     margin-left: -250px;
 }
@@ -248,6 +255,15 @@ container-fluid {
 }
 
 .tagCount {
+    font-size: 65%
+}
+
+.urlCount0 {
+    font-style: italic;
+    opacity: 60%;
+}
+
+.urlCount {
     font-size: 65%
 }
 

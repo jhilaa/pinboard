@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const token = "pateoiLGxeeOa1bbO.7d97dd01a0d5282f7e4d3b5fff9c9e10d2023d3a34b1811e1152a97182c2238d"; // Replace with your Bearer Token
         const headers = new Headers({
             "Authorization": `Bearer ${token}`,
-         });
+        });
 
         //** on floute l'arrière-plan pendant les requêtes
         const spinnerContainer = document.getElementById("spinnerContainer"); // Define spinnerContainer here
@@ -86,13 +86,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             })
 
             const pin_status = clone.querySelector(".pin_status")
-            if (record.fields.status==undefined) {
+            if (record.fields.status == undefined) {
                 pin_status.classList.add("bi-exclamation-circle");
             }
-            if (record.fields.status=="0" || record.fields.status=="") {
+            if (record.fields.status == "0" || record.fields.status == "") {
                 pin_status.classList.add("bi-exclamation-circle");
-            }
-            else {
+            } else {
                 pin_status.classList.remove("bi-exclamation-circle");
             }
 
@@ -101,14 +100,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const pinElement = e.target.closest(".pin");
                 const previous_status = pinElement.getAttribute("status");
                 let new_status;
-                if (previous_status =="0") {
+                if (previous_status == "0") {
                     new_status = 1;
-                    pinElement.setAttribute("status","1");
+                    pinElement.setAttribute("status", "1");
                     pin_status.classList.remove("bi-exclamation-circle");
-                }
-                else {
+                } else {
                     new_status = 0;
-                    pinElement.setAttribute("status","0");
+                    pinElement.setAttribute("status", "0");
                     pin_status.classList.add("bi-exclamation-circle");
                 }
 
@@ -137,8 +135,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 if (mini_url_input.value == mini_url_attribute) {
                     mini_url_input.value = "";
-                }
-                else {
+                } else {
                     mini_url_input.value = mini_url_attribute;
                 }
                 /******************/
@@ -331,7 +328,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 tagItemInput.name = tag.fields.name;
 
                 tagItemLabel.setAttribute('for', tag.id)
-                tagItemLabel.innerHTML = tag.fields.name;
+                //tagItemLabel.innerHTML = tag.fields.name;
                 tagItemLabel.setAttribute('name', tag.fields.name);
                 tagItemLabel.classList.add("form-check-label");
 
@@ -341,6 +338,52 @@ document.addEventListener("DOMContentLoaded", async function () {
                 tagCheckboxesList.appendChild(tagItemDiv);
             }
         }
+
+        async function createUrlRadios(pinData) {
+            const urlArray = pinData.records.map((record)=>{return record.fields.mini_url})
+            const sortedUrls = new Set(urlArray.sort((a, b) => a - b));
+
+            const urlRadiosList = document.getElementById("url_radios_list");
+
+            for (const url of sortedUrls) {
+                const urlItemDiv = document.createElement("div");
+                const urlItemInput = document.createElement("input");
+                const urlItemLabel = document.createElement("label");
+                urlItemInput.classList.add("form-check-input");
+                urlItemInput.type = "radio";
+                urlItemInput.id = url;
+                urlItemInput.name = "url";
+                urlItemInput.value = url;
+
+                urlItemInput.addEventListener('click', (e) => {
+                    const urlCheckbox = e.target;
+                    const urlInput = document.getElementById("mini-url-input");
+                    if (urlCheckbox.value == urlInput.value) {
+                        urlCheckbox.checked = false
+                        urlInput.value="";
+                    }
+                    else {
+                        urlInput.value = urlCheckbox.value;
+                    }
+
+                    const event = new Event('change', {
+                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                        cancelable: true // Permet d'annuler l'événement si nécessaire.
+                    });
+                    // Déclenchez l'événement sur l'élément input.
+                    urlInput.dispatchEvent(event);
+                });
+
+                urlItemLabel.setAttribute('for', url)
+                urlItemLabel.setAttribute('name', url)
+                urlItemLabel.innerHTML = url;
+                urlItemLabel.classList.add("form-check-label");
+
+                urlItemDiv.appendChild(urlItemInput);
+                urlItemDiv.appendChild(urlItemLabel);
+                urlItemDiv.classList.add("form-check");
+                urlRadiosList.appendChild(urlItemDiv);
+            }}
 
         async function createPins(pinData) {
             const pinModel = document.getElementById("pin_0");
@@ -387,6 +430,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const [pinData, tagData] = results; // Corrected variable names
                     // Handle tags Data
                     await createTagCheckboxes(tagData);
+                    await createUrlRadios(pinData);
 
                     // Create pin and modal
                     await createPins(pinData);
@@ -410,9 +454,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                         //await filterPinsAnd();
                         await filterPins();
                         countPinsByTag();
+                        countPinsByUrl();
                         countPins();
                     });
                 countPinsByTag();
+                countPinsByUrl();
                 countPins();
                 createModalSlides();
 
@@ -421,6 +467,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         //await filterPinsAnd();
                         await filterPins();
                         countPinsByTag();
+                        countPinsByUrl();
                         countPins();
                     }
                 )
@@ -429,6 +476,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     async () => {
                         await filterPins();
                         countPinsByTag();
+                        countPinsByUrl();
                         countPins();
                     }
                 )
@@ -437,6 +485,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     async () => {
                         await filterPins();
                         countPinsByTag();
+                        countPinsByUrl();
                         countPins();
                     }
                 )
@@ -522,7 +571,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const ratingTest = ratingComparaison(pinRating, ratingValue, ratingOperator);
                 const tagsIntersection = intersection(tagsIds, selectedCriteria)
                 const inputTextFound = searchInputText(textInputValue.toLowerCase(), pin);
-                const miniUrlMatch =(miniUrlInputValue=="" || pin.getAttribute("mini_url") == miniUrlInputValue);
+                const miniUrlMatch = (miniUrlInputValue == "" || pin.getAttribute("mini_url") == miniUrlInputValue);
 
 
                 if (tagsIntersection.length == selectedCriteria.length
@@ -535,8 +584,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (miniUrlInputValue != "") {
                     pin.querySelector(".funnel").classList.add("bi-funnel-fill");
                     pin.querySelector(".funnel").classList.remove("bi-funnel");
-                }
-                else {
+                } else {
                     pin.querySelector(".funnel").classList.remove("bi-funnel-fill");
                     pin.querySelector(".funnel").classList.add("bi-funnel");
                 }
@@ -545,6 +593,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             //mise à jour du nombre de fiches sur les tags
             countPinsByTag()
+            countPinsByUrl()
             countPins();
             createModalSlides();
         }
@@ -613,7 +662,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const visiblePinsTagsCountById = Object.entries(visiblePinsTagsCount).map(([id, count]) => ({id, count}));
             //
-            const tagCheckboxesLabel = document.getElementsByClassName("form-check-label");
+            //const tagCheckboxesLabel = document.getElementsByClassName("form-check-label");
+            const tagCheckboxesLabel = document.querySelectorAll("#tag_checkboxes_list .form-check-label");
             const tagCheckboxesLabelArray = [...tagCheckboxesLabel];
             const tagCheckboxesLabelForAttribute = tagCheckboxesLabelArray.map(checkbox => {
                 return checkbox.getAttribute("for")
@@ -649,6 +699,45 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
         }
 
+        function countPinsByUrl() {
+            //--
+            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
+            const visiblePinsArray = [...visiblePins];
+            const visiblePinsUrls = visiblePinsArray.map((pin) => {
+                return pin.getAttribute("mini_url");
+            });
+
+            // pour les urls
+            const visiblePinsUrlsCount = visiblePinsUrls.reduce((acc, url) => {
+                //const id = objet.id;
+                if (!acc[url]) {
+                    acc[url] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
+                } else {
+                    acc[url]++; // Incrémentez le compteur si le nom existe déjà
+                }
+                return acc;
+            }, {});
+
+            const visiblePinsCountByUrl = Object.entries(visiblePinsUrlsCount).map(([url, count]) => ({url, count}));
+            //
+            const urlRadiosLabel = document.querySelectorAll("#url_radios_list .form-check-label");
+            const urlRadiosLabelArray = [...urlRadiosLabel];
+
+            urlRadiosLabelArray.forEach(radioLabel => {
+                const urlNbOccurences = visiblePinsCountByUrl.find(element => element.url === radioLabel.getAttribute("for"));
+                if (urlNbOccurences == undefined) {
+                    radioLabel.classList.add("urlCount0");
+                    radioLabel.innerHTML = radioLabel.getAttribute("name");
+                }
+                else {
+                    radioLabel.classList.remove("urlCount0");
+                    //labelElement.textContent = labelElement.getAttribute("name") + " (" + tag.count + ")";
+                    radioLabel.innerHTML = radioLabel.getAttribute("name") + "<span class=\"urlCount\"> (" + urlNbOccurences.count + ")</span>";
+
+                }
+            })
+        }
+
 //** gestion des événement pour les filtres
         const rating_operator = document.getElementById("rating-operator");
         rating_operator.addEventListener("change",
@@ -656,6 +745,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 //await filterPinsAnd();
                 await filterPins();
                 countPinsByTag();
+                countPinsByUrl();
                 countPins();
             })
 
