@@ -341,7 +341,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         async function createUrlRadios(pinData) {
             const urlArray = pinData.records.map((record)=>{return record.fields.mini_url})
+
             const sortedUrls = new Set(urlArray.sort((a, b) => a - b));
+
+            const sortedTags = tagData.records.toSorted((a, b) => {
+                const nameA = a.fields.name.toLowerCase();
+                const nameB = b.fields.name.toLowerCase();
+
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                return 0;
+            });
+
 
             const urlRadiosList = document.getElementById("url_radios_list");
 
