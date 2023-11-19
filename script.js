@@ -8,6 +8,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         const spinnerContainer = document.getElementById("spinnerContainer"); // Define spinnerContainer here
         spinnerContainer.style.display = "block";
 
+        const domainRadiosList = document.getElementById("domain_radios_list");
+        const domainInput = document.getElementById("domain-input");
+        const domainLinkToggle = document.getElementById('domain_link_toggle');
+
         //** click sur les étoiles
         async function updateRating(id, rating) {
 
@@ -71,6 +75,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             clone.setAttribute("rating", record.fields.rating);
             clone.setAttribute("status", record.fields.status);
             clone.setAttribute("mini_url", record.fields.mini_url);
+            clone.setAttribute("domain", record.fields.domain);
 
             const pin_header = clone.querySelector(".pin_header");
             pin_header.addEventListener("click", (e) => {
@@ -259,9 +264,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         //** PIN DATA ******************************
-        async function getPinData() {
+        async function getPinData(domain) {
             try {
-                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {headers});
+                const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
+                const response = await fetch(apiUrl, {headers});
                 //const response = await fetch("https://pinboard-hqnx.onrender.com/api/pins", {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
@@ -289,9 +295,27 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         //** TAG DATA ******************************
-        async function getTagData() {
+        async function getTagData(domain) {
             try {
-                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags", {headers});
+                const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
+                const response = await fetch(apiUrl, {headers});
+                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags", {headers});
+                //const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data. Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+                //grid.init(data);
+            } catch (error) {
+                console.error("Error fetching or processing data:", error);
+            }
+        }
+
+        //** DOMAIN DATA ******************************
+        async function getDomainData() {
+            try {
+                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Domains", {headers});
                 //const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
@@ -316,6 +340,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return 0;
             });
             const tagCheckboxesList = document.getElementById("tag_checkboxes_list");
+            tagCheckboxesList.innerHTML = "";
 
             for (const tag of sortedTags) {
                 const tagItemDiv = document.createElement("li");
@@ -339,22 +364,58 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
+        async function createDomainRadios(domainData) {
+            const domainArray = domainData.records.map((record) => {
+                return record.fields.name
+            })
+            const sortedDomains = new Set(domainArray.sort());
+
+            for (const domain of sortedDomains) {
+                const domainItemDiv = document.createElement("div");
+                const domainItemInput = document.createElement("input");
+                const domainItemLabel = document.createElement("label");
+                domainItemInput.classList.add("form-check-input");
+                domainItemInput.type = "radio";
+                domainItemInput.id = domain;
+                domainItemInput.name = "domain";
+                domainItemInput.value = domain;
+
+                domainItemInput.addEventListener('click', (e) => {
+                    const domainCheckbox = e.target;
+                    if (domainCheckbox.value == domainInput.value) {
+                        domainCheckbox.checked = false
+                        domainInput.value = "";
+                    } else {
+                        domainInput.value = domainCheckbox.value;
+                    }
+
+                    const event = new Event('change', {
+                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                        cancelable: true // Permet d'annuler l'événement si nécessaire.
+                    });
+                    // Déclenchez l'événement sur l'élément input.
+                    domainInput.dispatchEvent(event);
+                });
+
+                domainItemLabel.setAttribute('for', domain)
+                domainItemLabel.setAttribute('name', domain)
+                domainItemLabel.innerHTML = domain;
+                domainItemLabel.classList.add("form-check-label");
+
+                domainItemDiv.appendChild(domainItemInput);
+                domainItemDiv.appendChild(domainItemLabel);
+                domainItemDiv.classList.add("form-check");
+                domainRadiosList.appendChild(domainItemDiv);
+            }
+        }
+
         async function createUrlRadios(pinData) {
-            const urlArray = pinData.records.map((record)=>{return record.fields.mini_url})
-
-            const sortedUrls = new Set(urlArray.sort((a, b) => a - b));
-
-            const sortedTags = tagData.records.toSorted((a, b) => {
-                const nameA = a.fields.name.toLowerCase();
-                const nameB = b.fields.name.toLowerCase();
-
-                if (nameA < nameB) return -1;
-                if (nameA > nameB) return 1;
-                return 0;
-            });
-
-
+            const urlArray = pinData.records.map((record) => {
+                return record.fields.mini_url
+            })
+            const sortedUrls = new Set(urlArray.sort());
             const urlRadiosList = document.getElementById("url_radios_list");
+            urlRadiosList.innerHTML = "";
 
             for (const url of sortedUrls) {
                 const urlItemDiv = document.createElement("div");
@@ -371,9 +432,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const urlInput = document.getElementById("mini-url-input");
                     if (urlCheckbox.value == urlInput.value) {
                         urlCheckbox.checked = false
-                        urlInput.value="";
-                    }
-                    else {
+                        urlInput.value = "";
+                    } else {
                         urlInput.value = urlCheckbox.value;
                     }
 
@@ -394,11 +454,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                 urlItemDiv.appendChild(urlItemLabel);
                 urlItemDiv.classList.add("form-check");
                 urlRadiosList.appendChild(urlItemDiv);
-            }}
+            }
+        }
 
         async function createPins(pinData) {
             const pinModel = document.getElementById("pin_0");
             const pinContainer = document.getElementById("pin_container");
+            pinContainer.innerHTML = "";
             for (const record of pinData.records) {
                 if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
                     tagsData = record.fields.tags_name.map((tag_name, index) => ({
@@ -432,23 +494,59 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
+        async function handleDomainChoice(domain) {
+            spinnerContainer.style.display = "block";
+            Promise.all([getPinData(domain), getTagData(domain)])
+                .then(async (results) => {
+                    try {
+                        // Handle the results of both promises
+                        const [pinData, tagData] = results; // Corrected variable names
+                        // Handle tags Data
+                        await createTagCheckboxes(tagData);
+                        await createUrlRadios(pinData);
+                        // Create pin and modal
+                        await createPins(pinData);
+                        await createModalSlides();
+                        await filterPins();
+                        countPinsByTag();
+                        countPinsByUrl();
+                        countPins();
+                        console.log("Data loaded successfully.");
+
+                    } catch (error) {
+                        console.error("Error fetching or processing data:", error);
+                    } finally {
+                        spinnerContainer.style.display = "none";
+                    }
+                })
+                .then(() => {
+                    const clickEvent = new Event('click', {
+                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                        cancelable: true // Permet d'annuler l'événement si nécessaire.
+                    });
+                    domainLinkToggle.dispatchEvent(clickEvent);
+                })
+        }
+
+
 //** INITIALISATION ************************
         //Promise.all([getPinData(), getTagData()])
-        Promise.all([getPinData(), getTagData()])
+        //Promise.all([getPinData(), getTagData(), getDomainData()])
+        getDomainData()
             .then(async (results) => {
                 try {
                     // Handle the results of both promises
-                    const [pinData, tagData] = results; // Corrected variable names
+                    //const [pinData, tagData, domainData] = results; // Corrected variable names
+                    const domainData = results; // Corrected variable names
                     // Handle tags Data
-                    await createTagCheckboxes(tagData);
-                    await createUrlRadios(pinData);
+                    await createDomainRadios(domainData);
+                    //await createTagCheckboxes(tagData);
+                    //await createUrlRadios(pinData);
 
                     // Create pin and modal
-                    await createPins(pinData);
+                    //await createPins(pinData);
 
-                    await createModalSlides();
-
-
+                    //await createModalSlides();
                     console.log("Data loaded successfully.");
 
                 } catch (error) {
@@ -458,6 +556,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             })
             .then(() => {
+                domainInput.addEventListener("change",
+                    async () => {
+                        const domain = domainInput.value;
+                        await handleDomainChoice(domain)
+                    }
+                )
+                document.getElementById("mini-url-input").addEventListener("change",
+                    async () => {
+                        await filterPins();
+                        countPinsByTag();
+                        countPinsByUrl();
+                        countPins();
+                    }
+                )
                 // Get all checked checkboxes
                 //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
                 document.getElementById("tag_checkboxes_container").addEventListener("change",
@@ -483,6 +595,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 )
 
+                /*
                 document.getElementById("text-input").addEventListener("change",
                     async () => {
                         await filterPins();
@@ -491,6 +604,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPins();
                     }
                 )
+
+                 */
 
                 document.getElementById("mini-url-input").addEventListener("change",
                     async () => {
@@ -739,8 +854,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (urlNbOccurences == undefined) {
                     radioLabel.classList.add("urlCount0");
                     radioLabel.innerHTML = radioLabel.getAttribute("name");
-                }
-                else {
+                } else {
                     radioLabel.classList.remove("urlCount0");
                     //labelElement.textContent = labelElement.getAttribute("name") + " (" + tag.count + ")";
                     radioLabel.innerHTML = radioLabel.getAttribute("name") + "<span class=\"urlCount\"> (" + urlNbOccurences.count + ")</span>";
