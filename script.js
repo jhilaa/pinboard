@@ -12,9 +12,36 @@ document.addEventListener("DOMContentLoaded", async function () {
         const domainInput = document.getElementById("domain-input");
         const domainLinkToggle = document.getElementById('domain_link_toggle');
 
+        function setCookie(cookieName, cookieValue) {
+            // Supprimez la ligne suivante si vous ne prévoyez pas d'utiliser expirationDays
+            // const expirationDays = 7;
+
+            const d = new Date();
+            // Ajoutez cette ligne si vous utilisez expirationDays
+            // d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+            document.cookie = cookieName + "=" + cookieValue + ";path=/";
+            document.cookie =
+                "doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; SameSite=None; Secure";
+        }
+
+        function getCookie(cookieName) {
+            let name = cookieName + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
         //** click sur les étoiles
         async function updateRating(id, rating) {
-
             method = "PATCH";
             postData = {
                 "fields": {
@@ -60,6 +87,16 @@ document.addEventListener("DOMContentLoaded", async function () {
             } catch (error) {
                 console.error("Error making POST request:", error);
             }
+        }
+
+        function triggerDomainInputChangeEvent() {
+            const event = new Event('change', {
+                bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                cancelable: true // Permet d'annuler l'événement si nécessaire.
+            });
+            // Déclenchez l'événement sur l'élément input.
+            domainInput.dispatchEvent(event);
+
         }
 
         //** Création des tuiles
@@ -379,6 +416,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 domainItemInput.id = domain;
                 domainItemInput.name = "domain";
                 domainItemInput.value = domain;
+                if (getCookie("domain") == domain) {
+                    domainItemInput.checked=true;
+                    domainInput.value = domain;
+
+                }
 
                 domainItemInput.addEventListener('click', (e) => {
                     const domainCheckbox = e.target;
@@ -388,13 +430,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     } else {
                         domainInput.value = domainCheckbox.value;
                     }
-
-                    const event = new Event('change', {
-                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
-                        cancelable: true // Permet d'annuler l'événement si nécessaire.
-                    });
-                    // Déclenchez l'événement sur l'élément input.
-                    domainInput.dispatchEvent(event);
+                    setCookie("domain", domainInput.value);
+                    triggerDomainInputChangeEvent();
                 });
 
                 domainItemLabel.setAttribute('for', domain)
@@ -520,6 +557,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 })
                 .then(() => {
+                    setCookie("domain", domain); //,30)
+                })
+                .then(() => {
                     const clickEvent = new Event('click', {
                         bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
                         cancelable: true // Permet d'annuler l'événement si nécessaire.
@@ -540,13 +580,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     const domainData = results; // Corrected variable names
                     // Handle tags Data
                     await createDomainRadios(domainData);
-                    //await createTagCheckboxes(tagData);
-                    //await createUrlRadios(pinData);
-
-                    // Create pin and modal
-                    //await createPins(pinData);
-
-                    //await createModalSlides();
                     console.log("Data loaded successfully.");
 
                 } catch (error) {
@@ -615,6 +648,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPins();
                     }
                 )
+            })
+            .then(() => {
+                triggerDomainInputChangeEvent()
             })
             .catch((error) => {
                 // Handle any errors that occurred in any of the promises
