@@ -303,7 +303,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** PIN DATA ******************************
         async function getPinData(domain) {
             try {
-                const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
+                //const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/pins)`;
+
                 const response = await fetch(apiUrl, {headers});
                 //const response = await fetch("https://pinboard-hqnx.onrender.com/api/pins", {headers});
                 if (!response.ok) {
@@ -335,9 +337,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function getTagData(domain) {
             try {
                 const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
-                const response = await fetch(apiUrl, {headers});
-                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags", {headers});
-                //const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
+                //const response = await fetch(apiUrl, {headers});
+                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/pins", {headers});
+                const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
@@ -432,6 +434,14 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                     setCookie("domain", domainInput.value);
                     triggerDomainInputChangeEvent();
+                    /*
+                    const event = new Event('change', {
+                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                        cancelable: true // Permet d'annuler l'événement si nécessaire.
+                    });
+                    // Déclenchez l'événement sur l'élément input.
+                    domainInput.dispatchEvent(event);
+                     */
                 });
 
                 domainItemLabel.setAttribute('for', domain)
