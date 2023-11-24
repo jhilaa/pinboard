@@ -13,15 +13,13 @@ document.addEventListener("DOMContentLoaded", async function () {
         const domainLinkToggle = document.getElementById('domain_link_toggle');
 
         function setCookie(cookieName, cookieValue) {
-            // Supprimez la ligne suivante si vous ne prévoyez pas d'utiliser expirationDays
-            // const expirationDays = 7;
-
             const d = new Date();
-            // Ajoutez cette ligne si vous utilisez expirationDays
-            // d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
-            document.cookie = cookieName + "=" + cookieValue + ";path=/";
-            document.cookie =
-                "doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; SameSite=None; Secure";
+            const expirationDays=50;
+            d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+            //document.cookie = "domain=value; domain=localhost; path=/";
+            const expirationDate = new Date();
+            expirationDate.setDate(expirationDate.getDate() + 7);
+            document.cookie = cookieName+"="+cookieValue+"; expires=Fri, 31 Dec 9999 23:59:59 GMT; SameSite=None; Secure";
         }
 
         function getCookie(cookieName) {
@@ -304,7 +302,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function getPinData(domain) {
             try {
                 //const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
-                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/pins)`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/pins`;
 
                 const response = await fetch(apiUrl, {headers});
                 //const response = await fetch("https://pinboard-hqnx.onrender.com/api/pins", {headers});
@@ -336,10 +334,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** TAG DATA ******************************
         async function getTagData(domain) {
             try {
-                const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Tags?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
-                //const response = await fetch(apiUrl, {headers});
-                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/pins", {headers});
-                const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/tag/all`;
+                const response = await fetch(apiUrl, {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
@@ -354,8 +350,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** DOMAIN DATA ******************************
         async function getDomainData() {
             try {
-                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Domains", {headers});
-                //const response = await fetch("https://pinboard-hqnx.onrender.com/api/tags", {headers});
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/all`;
+                const response = await fetch(apiUrl, {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
                 }
@@ -403,7 +399,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-        async function createDomainRadios(domainData) {
+        async function createDomainRadios(domainData, domainCookie) {
             const domainArray = domainData.records.map((record) => {
                 return record.fields.name
             })
@@ -418,30 +414,22 @@ document.addEventListener("DOMContentLoaded", async function () {
                 domainItemInput.id = domain;
                 domainItemInput.name = "domain";
                 domainItemInput.value = domain;
-                if (getCookie("domain") == domain) {
+                if (domain == domainCookie) {
                     domainItemInput.checked=true;
                     domainInput.value = domain;
-
                 }
 
                 domainItemInput.addEventListener('click', (e) => {
                     const domainCheckbox = e.target;
                     if (domainCheckbox.value == domainInput.value) {
-                        domainCheckbox.checked = false
-                        domainInput.value = "";
+                        //domainCheckbox.checked = false
+                        //domainInput.value = "";
+                        domainCheckbox.checked = true;
                     } else {
                         domainInput.value = domainCheckbox.value;
+                        setCookie("selectedDomain", domainInput.value);
+                        triggerDomainInputChangeEvent();
                     }
-                    setCookie("domain", domainInput.value);
-                    triggerDomainInputChangeEvent();
-                    /*
-                    const event = new Event('change', {
-                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
-                        cancelable: true // Permet d'annuler l'événement si nécessaire.
-                    });
-                    // Déclenchez l'événement sur l'élément input.
-                    domainInput.dispatchEvent(event);
-                     */
                 });
 
                 domainItemLabel.setAttribute('for', domain)
@@ -542,46 +530,57 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         async function handleDomainChoice(domain) {
-            spinnerContainer.style.display = "block";
-            Promise.all([getPinData(domain), getTagData(domain)])
-                .then(async (results) => {
-                    try {
-                        // Handle the results of both promises
-                        const [pinData, tagData] = results; // Corrected variable names
-                        // Handle tags Data
-                        await createTagCheckboxes(tagData);
-                        await createUrlRadios(pinData);
-                        // Create pin and modal
-                        await createPins(pinData);
-                        await createModalSlides();
-                        await filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        console.log("Data loaded successfully.");
+            if (domain != "" && domain != undefined) {
+                spinnerContainer.style.display = "block";
+                Promise.all([getPinData(domain), getTagData(domain)])
+                    .then(async (results) => {
+                        try {
+                            // Handle the results of both promises
+                            const [pinData, tagData] = results; // Corrected variable names
+                            // Handle tags Data
+                            await createTagCheckboxes(tagData);
+                            await createUrlRadios(pinData);
+                            // Create pin and modal
+                            await createPins(pinData);
+                            await createModalSlides();
+                            await filterPins();
+                            countPinsByTag();
+                            countPinsByUrl();
+                            countPins();
+                            console.log("Data loaded successfully.");
 
-                    } catch (error) {
-                        console.error("Error fetching or processing data:", error);
-                    } finally {
-                        spinnerContainer.style.display = "none";
-                    }
-                })
-                .then(() => {
-                    setCookie("domain", domain); //,30)
-                })
-                .then(() => {
-                    const clickEvent = new Event('click', {
-                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
-                        cancelable: true // Permet d'annuler l'événement si nécessaire.
-                    });
-                    domainLinkToggle.dispatchEvent(clickEvent);
-                })
+                        } catch (error) {
+                            console.error("Error fetching or processing data:", error);
+                        } finally {
+                            spinnerContainer.style.display = "none";
+                        }
+                    })
+                    .then(() => {
+                        setCookie("selectedDomain", domain); //,30)
+                    })
+                    .then(() => {
+                        const clickEvent = new Event('click', {
+                            bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                            cancelable: true // Permet d'annuler l'événement si nécessaire.
+                        });
+                        domainLinkToggle.dispatchEvent(clickEvent);
+                    })
+            }
+            else {
+                const clickEvent = new Event('click', {
+                    bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                    cancelable: true // Permet d'annuler l'événement si nécessaire.
+                });
+                domainLinkToggle.dispatchEvent(clickEvent);
+                setCookie("selectedDomain", "")
+            }
         }
 
 
 //** INITIALISATION ************************
         //Promise.all([getPinData(), getTagData()])
         //Promise.all([getPinData(), getTagData(), getDomainData()])
+        const domainCookie = getCookie("selectedDomain");
         getDomainData()
             .then(async (results) => {
                 try {
@@ -589,7 +588,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     //const [pinData, tagData, domainData] = results; // Corrected variable names
                     const domainData = results; // Corrected variable names
                     // Handle tags Data
-                    await createDomainRadios(domainData);
+                    await createDomainRadios(domainData, domainCookie);
                     console.log("Data loaded successfully.");
 
                 } catch (error) {
