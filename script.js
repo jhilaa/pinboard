@@ -19,7 +19,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             //document.cookie = "domain=value; domain=localhost; path=/";
             const expirationDate = new Date();
             expirationDate.setDate(expirationDate.getDate() + 7);
-            document.cookie = cookieName+"="+cookieValue+"; expires=Fri, 31 Dec 9999 23:59:59 GMT; SameSite=None; Secure";
+            //document.cookie = cookieName+"="+cookieValue+"; expires=Fri, 31 Dec 9999 23:59:59 GMT; Path=/";
+            document.cookie = cookieName+"="+cookieValue+"; Path=/";
         }
 
         function getCookie(cookieName) {
@@ -334,7 +335,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** TAG DATA ******************************
         async function getTagData(domain) {
             try {
-                const apiUrl = `https://pinboard-hqnx.onrender.com/api/tag/all`;
+                //const apiUrl = `https://pinboard-hqnx.onrender.com/api/tag/all`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/tags`;
+
                 const response = await fetch(apiUrl, {headers});
                 if (!response.ok) {
                     throw new Error(`Failed to fetch data. Status: ${response.status}`);
@@ -365,7 +368,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         //** FIN DATA **********************
 
-        async function createTagCheckboxes(tagData) {
+        async function createTagCheckboxes(tagData, domain) {
             const sortedTags = tagData.records.toSorted((a, b) => {
                 const nameA = a.fields.name.toLowerCase();
                 const nameB = b.fields.name.toLowerCase();
@@ -399,7 +402,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-        async function createDomainRadios(domainData, domainCookie) {
+        async function createDomainRadios(domainData, domain) {
             const domainArray = domainData.records.map((record) => {
                 return record.fields.name
             })
@@ -587,7 +590,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     // Handle the results of both promises
                     //const [pinData, tagData, domainData] = results; // Corrected variable names
                     const domainData = results; // Corrected variable names
-                    // Handle tags Data
                     await createDomainRadios(domainData, domainCookie);
                     console.log("Data loaded successfully.");
 
@@ -912,7 +914,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         const rating_operator = document.getElementById("rating-operator");
         rating_operator.addEventListener("change",
             async () => {
-                //await filterPinsAnd();
                 await filterPins();
                 countPinsByTag();
                 countPinsByUrl();
