@@ -128,12 +128,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
             const pin_status = clone.querySelector(".pin_status")
             if (record.fields.status == undefined) {
-                pin_status.classList.add("bi-exclamation-circle");
+                pin_status.classList.add("btn-green");
             }
             if (record.fields.status == "0" || record.fields.status == "") {
-                pin_status.classList.add("bi-exclamation-circle");
+                pin_status.classList.add("btn-green");
             } else {
-                pin_status.classList.remove("bi-exclamation-circle");
+                pin_status.classList.remove("btn-green");
             }
 
             pin_status.addEventListener("click", async (e) => {
@@ -144,11 +144,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (previous_status == "0") {
                     new_status = 1;
                     pinElement.setAttribute("status", "1");
-                    pin_status.classList.remove("bi-exclamation-circle");
+                    pin_status.classList.remove("btn-green");
                 } else {
                     new_status = 0;
                     pinElement.setAttribute("status", "0");
-                    pin_status.classList.add("bi-exclamation-circle");
+                    pin_status.classList.add("btn-green");
                 }
 
                 const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
