@@ -80,6 +80,15 @@
         </ul>
 
         <ul class="list-unstyled components">
+            <div id="group_checkboxes_container">
+                <a href="#group_checkboxes_list" id="group_link_toggle" data-toggle="collapse" aria-expanded="false"
+                   class="dropdown-toggle">Dossier</a>
+                <!---------------->
+                <ul id="group_checkboxes_list" class="collapse  list-unstyled"></ul>
+            </div>
+        </ul>
+
+        <ul class="list-unstyled components">
             <!--- <div class="rating position-relative d-flex"> -->
             <div style="display: flex;flex-direction: row;vertical-align: middle">
                 <select id="rating-operator" class="selectpicker" data-width="fit" name="star-select" id="star-select">
@@ -219,6 +228,7 @@
 </script>
 
 <script src="./public/script.js"></script>
+<script src="./public/tree.min.js"></script>
 <!-- modal ------>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>

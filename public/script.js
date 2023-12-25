@@ -355,6 +355,24 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
+        //** GROUP DATA ******************************
+        async function getGroupData(domain) {
+            try {
+                //onst apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/groups`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/Maths/groups`;
+
+                const response = await fetch(apiUrl, {headers});
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch data. Status: ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+                //grid.init(data);
+            } catch (error) {
+                console.error("Error fetching or processing data:", error);
+            }
+        }
+
         //** DOMAIN DATA ******************************
         async function getDomainData() {
             try {
@@ -500,6 +518,50 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
+         function createGroupTree(groupData) {
+             function trouverFils(array, parent) {
+                let children = [];
+                if (Array.isArray(array)) {
+                    array.forEach(record => {
+                        const fields = record.fields;
+                        if (Array.isArray(fields.Group) && fields.Group.length >0) {
+                            if (parent == fields.Group[0]) {
+                                children.push({
+                                    id: record.id,
+                                    text: fields.name,
+                                    children: trouverFils(array, record.id)
+                                });
+                            }
+                        }
+                    });
+                }
+                return children;
+            }
+
+            try {
+                let result = trouverFils(groupData.records, "recqhM5UDTNnUVvaL");
+                // Exemple d'utilisation avec les données fournies
+                console.log("-groupData-----------");
+                console.log(groupData.records);
+                console.log("-trouverFils-----------");
+                console.log(result);
+
+                let tree = new Tree('#group_checkboxes_list', {
+                    data: result,
+                    closeDepth: 3,
+                    loaded: function () {
+                        this.values = [];
+                        this.disables = [];
+                    },
+                    onChange: function () {
+                        console.log(this.values);
+                    }
+                });
+            } catch (error) {
+                console.error("Error fetching or processing data:", error);
+            }
+        }
+
         async function createPins(pinData) {
             const pinModel = document.getElementById("pin_0");
             const pinContainer = document.getElementById("pin_container");
@@ -540,14 +602,15 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function handleDomainChoice(domain) {
             if (domain != "" && domain != undefined) {
                 spinnerContainer.style.display = "block";
-                Promise.all([getPinData(domain), getTagData(domain)])
+                Promise.all([getPinData(domain), getTagData(domain), getGroupData(domain)])
                     .then(async (results) => {
                         try {
                             // Handle the results of both promises
-                            const [pinData, tagData] = results; // Corrected variable names
+                            const [pinData, tagData, groupData] = results; // Corrected variable names
                             // Handle tags Data
                             await createTagCheckboxes(tagData);
                             await createUrlRadios(pinData);
+                            await createGroupTree(groupData)
                             // Create pin and modal
                             await createPins(pinData);
                             await createModalSlides();
