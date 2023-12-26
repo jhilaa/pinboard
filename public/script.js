@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const domainRadiosList = document.getElementById("domain_radios_list");
         const domainInput = document.getElementById("domain-input");
         const domainLinkToggle = document.getElementById('domain_link_toggle');
+        const groupCheckboxesList = document.getElementById("group_checkboxes_list");
 
         function setCookie(cookieName, cookieValue) {
             const d = new Date();
@@ -99,7 +100,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         //** Création des tuiles
-        function createPin(pinModel, record, tagsData) {
+        function createPin(pinModel, record, tagsData, groupsData) {
             const clone = pinModel.cloneNode(true);
 
             clone.id = record.id;
@@ -233,6 +234,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 //
                 clone.classList.add(tag.tag_id);
             }
+            if (groupsData !== undefined && groupsData !== null) {
+                for (const group of groupsData) {
+                    //
+                    clone.classList.add(group.group_id);
+                }
+            }
 
             clone.style.display = "block";
             return clone;
@@ -358,8 +365,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** GROUP DATA ******************************
         async function getGroupData(domain) {
             try {
-                //onst apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/groups`;
-                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/Maths/groups`;
+                //const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/groups`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/groups`;
 
                 const response = await fetch(apiUrl, {headers});
                 if (!response.ok) {
@@ -539,6 +546,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             try {
+
                 let result = trouverFils(groupData.records, "recqhM5UDTNnUVvaL");
                 // Exemple d'utilisation avec les données fournies
                 console.log("-groupData-----------");
@@ -546,6 +554,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.log("-trouverFils-----------");
                 console.log(result);
 
+                groupCheckboxesList.innerHTML="";
                 let tree = new Tree('#group_checkboxes_list', {
                     data: result,
                     closeDepth: 3,
@@ -566,6 +575,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             const pinModel = document.getElementById("pin_0");
             const pinContainer = document.getElementById("pin_container");
             pinContainer.innerHTML = "";
+            let tagsData;
+            let groupsData;
             for (const record of pinData.records) {
                 if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
                     tagsData = record.fields.tags_name.map((tag_name, index) => ({
@@ -574,8 +585,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                         tag_id: record.fields.tag[index]
                     }));
                 }
+                if (record.fields.groups_name != undefined && record.fields.groups_name.length > 0) {
+                    groupsData = record.fields.groups_name.map((group_name, index) => ({
+                        group_name: group_name.replace(" ", "&nbsp;"),
+                        group_id: record.fields.groups[index]
+                    }));
+                    console.log ("groupsData");
+                    console.log (groupsData);
+                }
 
-                const clonedPin = createPin(pinModel, record, tagsData);
+                const clonedPin = createPin(pinModel, record, tagsData, groupsData);
                 pinContainer.appendChild(clonedPin);
             }
         }
@@ -593,7 +612,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             modalContainer.innerHTML = "";
             for (const record of records) {
                 if (record != undefined && record.fields.name != undefined) {
-                    const newSlide = createSlide(record, tagsData)
+                    const newSlide = createSlide(record)
                     modalContainer.appendChild(newSlide);
                 }
             }
@@ -707,17 +726,21 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 )
 
-                /*
-                document.getElementById("text-input").addEventListener("change",
+
+                document.querySelector(".treejs").addEventListener("click",
                     async () => {
+                    console.log ("test -------------------")
+                    /*
                         await filterPins();
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
+
+                     */
                     }
                 )
 
-                 */
+
 
                 document.getElementById("mini-url-input").addEventListener("change",
                     async () => {
