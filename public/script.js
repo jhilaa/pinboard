@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const domainInput = document.getElementById("domain-input");
         const domainLinkToggle = document.getElementById('domain_link_toggle');
         const groupCheckboxesList = document.getElementById("group_checkboxes_list");
+        const pinContainer = document.getElementById("pin_container");
 
         function setCookie(cookieName, cookieValue) {
             const d = new Date();
@@ -101,151 +102,162 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         //** Création des tuiles
-        function createPin(pinModel, record, tagsData, groupsData) {
-            const clone = pinModel.cloneNode(true);
-
-            clone.id = record.id;
-            clone.querySelector(".pin_body h4").textContent = record.fields.name;
-            clone.querySelector(".pin_body .description").textContent = record.fields.description;
-            clone.querySelector(".pin_body .url").textContent = record.fields.url;
-            clone.querySelector(".pin_body .url").href = record.fields.url;
-            clone.querySelector(".pin_header img").src = record.fields.img_url;
-            clone.setAttribute("rating", record.fields.rating);
-            clone.setAttribute("status", record.fields.status);
-            clone.setAttribute("mini_url", record.fields.mini_url);
-            clone.setAttribute("domain", record.fields.domain);
-
-            const pin_header = clone.querySelector(".pin_header");
-            pin_header.addEventListener("click", (e) => {
-                const pinElement = e.target.closest(".pin");
-                const carouselItemActive = document.querySelector(".carousel-item.active");
-                const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
-                if (carouselItemActive !== null) {
-                    carouselItemActive.classList.remove("active");
+        function createPins(pinData) {
+            pinContainer.innerHTML = "";
+            let tagsData;
+            let groupsData;
+            for (const record of pinData.records) {
+                if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
+                    tagsData = record.fields.tags_name.map((tag_name, index) => ({
+                        tag_name: tag_name.replace(" ", "&nbsp;"),
+                        tag_color: record.fields.tags_color[index],
+                        tag_id: record.fields.tag[index]
+                    }));
                 }
-                if (carouselItem !== null) {
-                    carouselItem.classList.add("active");
+                if (record.fields.groups_name != undefined && record.fields.groups_name.length > 0) {
+                    groupsData = record.fields.groups_name.map((group_name, index) => ({
+                        group_name: group_name.replace(" ", "&nbsp;"),
+                        group_id: record.fields.groups[index]
+                    }));
+                    console.log("groupsData");
+                    console.log(groupsData);
                 }
-            })
 
-            const pin_status = clone.querySelector(".pin_status")
-            if (record.fields.status == undefined) {
-                pin_status.classList.add("btn-green");
-                pin_status.classList.remove("btn-green");
-            }
-            if (record.fields.status == "0" || record.fields.status == "") {
-                pin_status.classList.add("btn-green");
-                pin_status.classList.remove("btn-green");
-            } else {
-                pin_status.classList.remove("btn-green")
-                pin_status.classList.add("btn-green");
-            }
+                const pinModel = document.getElementById("pin_0");
+                const clone = pinModel.cloneNode(true);
 
-            pin_status.addEventListener("click", async (e) => {
-                e.stopPropagation();
-                const pinElement = e.target.closest(".pin");
-                const previous_status = pinElement.getAttribute("status");
-                let new_status;
-                if (previous_status == "0") {
-                    new_status = 1;
-                    pinElement.setAttribute("status", "1");
-                    pin_status.classList.remove("btn-green");
-                    pin_status.classList.add("btn-green");
-                } else {
-                    new_status = 0;
-                    pinElement.setAttribute("status", "0");
+                clone.id = record.id;
+                clone.querySelector(".pin_body h4").textContent = record.fields.name;
+                clone.querySelector(".pin_body .description").textContent = record.fields.description;
+                clone.querySelector(".pin_body .url").textContent = record.fields.url;
+                clone.querySelector(".pin_body .url").href = record.fields.url;
+                clone.querySelector(".pin_header img").src = record.fields.img_url;
+                clone.setAttribute("rating", record.fields.rating);
+                clone.setAttribute("status", record.fields.status);
+                clone.setAttribute("mini_url", record.fields.mini_url);
+                clone.setAttribute("domain", record.fields.domain);
+                clone.setAttribute("group", record.fields.groups);
+
+                const pin_header = clone.querySelector(".pin_header");
+                pin_header.addEventListener("click", (e) => {
+                    const pinElement = e.target.closest(".pin");
+                    const carouselItemActive = document.querySelector(".carousel-item.active");
+                    const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
+                    if (carouselItemActive !== null) {
+                        carouselItemActive.classList.remove("active");
+                    }
+                    if (carouselItem !== null) {
+                        carouselItem.classList.add("active");
+                    }
+                })
+
+                const pin_status = clone.querySelector(".pin_status")
+                if (record.fields.status == undefined) {
                     pin_status.classList.add("btn-green");
                     pin_status.classList.remove("btn-green");
                 }
-
-                const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
-                spinnerPinContainerElement.style.display = "flex";
-                await updateStatus(pinElement.id, new_status);
-                spinnerPinContainerElement.style.display = "none";
-                /*
-                const pinElement = e.target.closest(".pin");
-                const carouselItemActive = document.querySelector(".carousel-item.active");
-                const carouselItem = document.querySelector(".carousel-item#" + pinElement.id);
-                if (carouselItemActive !== null) {
-                    carouselItemActive.classList.remove("active");
-                }
-                if (carouselItem !== null) {
-                    carouselItem.classList.add("active");
-                }
-                */
-            })
-
-            const globe = clone.querySelector(".bi-globe");
-            globe.addEventListener("click", (e) => {
-                const pinElement = e.target.closest(".pin");
-                const mini_url_attribute = pinElement.getAttribute("mini_url");
-                const mini_url_input = document.getElementById("mini-url-input");
-
-                if (mini_url_input.value == mini_url_attribute) {
-                    mini_url_input.value = "";
+                if (record.fields.status == "0" || record.fields.status == "") {
+                    pin_status.classList.add("btn-green");
+                    pin_status.classList.remove("btn-green");
                 } else {
-                    mini_url_input.value = mini_url_attribute;
+                    pin_status.classList.remove("btn-green")
+                    pin_status.classList.add("btn-green");
                 }
-                /******************/
-                const event = new Event('change', {
-                    bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
-                    cancelable: true // Permet d'annuler l'événement si nécessaire.
-                });
-                // Déclenchez l'événement sur l'élément input.
-                mini_url_input.dispatchEvent(event);
-            })
 
-
-            const pin_rating_stars = clone.querySelectorAll('.pin .rating .star');
-            pin_rating_stars.forEach((star, index) => {
-                star.addEventListener('click', async (e) => {
-                    e.stopPropagation()
-                    const old_value = parseInt(clone.getAttribute('rating'));
-                    let new_value = parseInt(star.getAttribute('data-value'));
-
-                    if (old_value === 1 && new_value === 1) {
-                        new_value = 0;
+                pin_status.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const pinElement = e.target.closest(".pin");
+                    const previous_status = pinElement.getAttribute("status");
+                    let new_status;
+                    if (previous_status == "0") {
+                        new_status = 1;
+                        pinElement.setAttribute("status", "1");
+                        pin_status.classList.remove("btn-green");
+                        pin_status.classList.add("btn-green");
+                    } else {
+                        new_status = 0;
+                        pinElement.setAttribute("status", "0");
+                        pin_status.classList.add("btn-green");
+                        pin_status.classList.remove("btn-green");
                     }
 
-                    clone.setAttribute("rating", new_value);
-                    updateStarsDisplay(pin_rating_stars, old_value, new_value);
-
-                    //const spinnerPinContainerElement = e.target.closest(".spinnerPinContainer");
-                    const pinElement = e.target.closest(".pin");
                     const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
                     spinnerPinContainerElement.style.display = "flex";
-                    await updateRating(pinElement.id, new_value);
+                    await updateStatus(pinElement.id, new_status);
                     spinnerPinContainerElement.style.display = "none";
+                })
 
+                const globe = clone.querySelector(".bi-globe");
+                globe.addEventListener("click", (e) => {
+                    const pinElement = e.target.closest(".pin");
+                    const mini_url_attribute = pinElement.getAttribute("mini_url");
+                    const mini_url_input = document.getElementById("mini-url-input");
+
+                    if (mini_url_input.value == mini_url_attribute) {
+                        mini_url_input.value = "";
+                    } else {
+                        mini_url_input.value = mini_url_attribute;
+                    }
+                    /******************/
+                    const event = new Event('change', {
+                        bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
+                        cancelable: true // Permet d'annuler l'événement si nécessaire.
+                    });
+                    // Déclenchez l'événement sur l'élément input.
+                    mini_url_input.dispatchEvent(event);
+                })
+
+
+                const pin_rating_stars = clone.querySelectorAll('.pin .rating .star');
+                pin_rating_stars.forEach((star, index) => {
+                    star.addEventListener('click', async (e) => {
+                        e.stopPropagation()
+                        const old_value = parseInt(clone.getAttribute('rating'));
+                        let new_value = parseInt(star.getAttribute('data-value'));
+
+                        if (old_value === 1 && new_value === 1) {
+                            new_value = 0;
+                        }
+
+                        clone.setAttribute("rating", new_value);
+                        updateStarsDisplay(pin_rating_stars, old_value, new_value);
+
+                        //const spinnerPinContainerElement = e.target.closest(".spinnerPinContainer");
+                        const pinElement = e.target.closest(".pin");
+                        const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
+                        spinnerPinContainerElement.style.display = "flex";
+                        await updateRating(pinElement.id, new_value);
+                        spinnerPinContainerElement.style.display = "none";
+
+                    });
                 });
-            });
 
-            updateStarsDisplay(pin_rating_stars, 0, record.fields.rating);
+                updateStarsDisplay(pin_rating_stars, 0, record.fields.rating);
 
 
-            const tags = clone.querySelector(".pin_body .tags");
-            for (const tag of tagsData) {
-                //
-                const newSpan = document.createElement("span");
-                newSpan.innerHTML = tag.tag_name;
-                newSpan.style.background = tag.tag_color;
-                newSpan.id = tag.tag_id
-                newSpan.classList.add("tag");
-                tags.appendChild(newSpan);
-                //
-                clone.classList.add(tag.tag_id);
-            }
-            if (groupsData !== undefined && groupsData !== null) {
-                for (const group of groupsData) {
+                const tags = clone.querySelector(".pin_body .tags");
+                for (const tag of tagsData) {
                     //
-                    clone.classList.add(group.group_id);
+                    const newSpan = document.createElement("span");
+                    newSpan.innerHTML = tag.tag_name;
+                    newSpan.style.background = tag.tag_color;
+                    newSpan.id = tag.tag_id
+                    newSpan.classList.add("tag");
+                    tags.appendChild(newSpan);
+                    //
+                    clone.classList.add(tag.tag_id);
                 }
+                if (groupsData !== undefined && groupsData !== null) {
+                    for (const group of groupsData) {
+                        //
+                        clone.classList.add(group.group_id);
+                    }
+                }
+
+                clone.style.display = "block";
+                pinContainer.appendChild(clone);
             }
-
-            clone.style.display = "block";
-            return clone;
         }
-
         //** Création des slides la modal
         function createSlide(record) {
             const modalCarouselItem = document.createElement("div");
@@ -574,34 +586,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
 
-        async function createPins(pinData) {
-            const pinModel = document.getElementById("pin_0");
-            const pinContainer = document.getElementById("pin_container");
-            pinContainer.innerHTML = "";
-            let tagsData;
-            let groupsData;
-            for (const record of pinData.records) {
-                if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
-                    tagsData = record.fields.tags_name.map((tag_name, index) => ({
-                        tag_name: tag_name.replace(" ", "&nbsp;"),
-                        tag_color: record.fields.tags_color[index],
-                        tag_id: record.fields.tag[index]
-                    }));
-                }
-                if (record.fields.groups_name != undefined && record.fields.groups_name.length > 0) {
-                    groupsData = record.fields.groups_name.map((group_name, index) => ({
-                        group_name: group_name.replace(" ", "&nbsp;"),
-                        group_id: record.fields.groups[index]
-                    }));
-                    console.log("groupsData");
-                    console.log(groupsData);
-                }
-
-                const clonedPin = createPin(pinModel, record, tagsData, groupsData);
-                pinContainer.appendChild(clonedPin);
-            }
-        }
-
         async function createModalSlides() {
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
             const visiblePinsTagsArray = [...visiblePins];
@@ -619,11 +603,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     modalContainer.appendChild(newSlide);
                 }
             }
-        }
-
-        async function handleGroupsChoice(groups) {
-            console.log("handleGroupsChoice ----------");
-            console.log(groups);
         }
 
         async function handleDomainChoice(domain) {
@@ -798,26 +777,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         function searchGroupIds(groupIds, pin) {
-            const pinClassList = pin.classList;
-            if (groupIds.length == 0)
-            {
+            const pinGroupAttribute = pin.getAttribute("group");
+            if (groupIds.length == 0) {
                 return true
             }
-            if (pinClassList.length == 0) {
-                return false
-            }
-            if (groupIds != undefined) {
-                groupIds.forEach(groupId => {
-                    if (pinClassList.contains(groupId)) {
-                        console.log("pinClassList");
-                        console.log(pinClassList);
-                        console.log("groupId");
-                        console.log(groupId);
-                        return true
-                    }
-                })
-            }
-            return false;
+            return (groupIds.includes(pinGroupAttribute))
         }
 
         async function filterPins() {
