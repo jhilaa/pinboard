@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             "Authorization": `Bearer ${token}`,
         });
 
+
         //** on floute l'arrière-plan pendant les requêtes
         const spinnerContainer = document.getElementById("spinnerContainer"); // Define spinnerContainer here
         spinnerContainer.style.display = "block";
@@ -15,13 +16,13 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         function setCookie(cookieName, cookieValue) {
             const d = new Date();
-            const expirationDays=50;
+            const expirationDays = 50;
             d.setTime(d.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
             //document.cookie = "domain=value; domain=localhost; path=/";
             const expirationDate = new Date();
             expirationDate.setDate(expirationDate.getDate() + 7);
             //document.cookie = cookieName+"="+cookieValue+"; expires=Fri, 31 Dec 9999 23:59:59 GMT; Path=/";
-            document.cookie = cookieName+"="+cookieValue+"; Path=/";
+            document.cookie = cookieName + "=" + cookieValue + "; Path=/";
         }
 
         function getCookie(cookieName) {
@@ -315,7 +316,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function getPinData(domain) {
             try {
                 //const apiUrl = `https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins?filterByFormula=` + encodeURIComponent(`AND({domain_name}="` + domain + `")`);
-                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/pins`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/` + domain + `/pins`;
 
                 const response = await fetch(apiUrl, {headers});
                 //const response = await fetch("https://pinboard-hqnx.onrender.com/api/pins", {headers});
@@ -348,7 +349,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function getTagData(domain) {
             try {
                 //const apiUrl = `https://pinboard-hqnx.onrender.com/api/tag/all`;
-                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/tags`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/` + domain + `/tags`;
 
                 const response = await fetch(apiUrl, {headers});
                 if (!response.ok) {
@@ -366,7 +367,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         async function getGroupData(domain) {
             try {
                 //const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/groups`;
-                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/`+domain+`/groups`;
+                const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/` + domain + `/groups`;
 
                 const response = await fetch(apiUrl, {headers});
                 if (!response.ok) {
@@ -448,7 +449,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 domainItemInput.name = "domain";
                 domainItemInput.value = domain;
                 if (domain == domainCookie) {
-                    domainItemInput.checked=true;
+                    domainItemInput.checked = true;
                     domainInput.value = domain;
                 }
 
@@ -525,13 +526,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-         function createGroupTree(groupData) {
-             function trouverFils(array, parent) {
+        function createGroupTree(groupData) {
+            function trouverFils(array, parent) {
                 let children = [];
                 if (Array.isArray(array)) {
                     array.forEach(record => {
                         const fields = record.fields;
-                        if (Array.isArray(fields.Group) && fields.Group.length >0) {
+                        if (Array.isArray(fields.Group) && fields.Group.length > 0) {
                             if (parent == fields.Group[0]) {
                                 children.push({
                                     id: record.id,
@@ -546,16 +547,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
 
             try {
-
                 let result = trouverFils(groupData.records, "recqhM5UDTNnUVvaL");
                 // Exemple d'utilisation avec les données fournies
-                console.log("-groupData-----------");
-                console.log(groupData.records);
-                console.log("-trouverFils-----------");
-                console.log(result);
 
-                groupCheckboxesList.innerHTML="";
-                let tree = new Tree('#group_checkboxes_list', {
+                groupCheckboxesList.innerHTML = "";
+                tree = new Tree('#group_checkboxes_list', {
                     data: result,
                     closeDepth: 3,
                     loaded: function () {
@@ -563,13 +559,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                         this.disables = [];
                     },
                     onChange: function () {
-                        console.log(this.values);
+
+                        //await filterPinsAnd();
+                        filterPins();
+                        countPinsByTag();
+                        countPinsByUrl();
+                        countPins();
+
                     }
                 });
             } catch (error) {
                 console.error("Error fetching or processing data:", error);
             }
         }
+
 
         async function createPins(pinData) {
             const pinModel = document.getElementById("pin_0");
@@ -590,8 +593,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                         group_name: group_name.replace(" ", "&nbsp;"),
                         group_id: record.fields.groups[index]
                     }));
-                    console.log ("groupsData");
-                    console.log (groupsData);
+                    console.log("groupsData");
+                    console.log(groupsData);
                 }
 
                 const clonedPin = createPin(pinModel, record, tagsData, groupsData);
@@ -616,6 +619,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     modalContainer.appendChild(newSlide);
                 }
             }
+        }
+
+        async function handleGroupsChoice(groups) {
+            console.log("handleGroupsChoice ----------");
+            console.log(groups);
         }
 
         async function handleDomainChoice(domain) {
@@ -655,8 +663,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         });
                         domainLinkToggle.dispatchEvent(clickEvent);
                     })
-            }
-            else {
+            } else {
                 const clickEvent = new Event('click', {
                     bubbles: true,  // Permet à l'événement de se propager (peut être utile dans certains cas).
                     cancelable: true // Permet d'annuler l'événement si nécessaire.
@@ -727,21 +734,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )
 
 
-                document.querySelector(".treejs").addEventListener("click",
-                    async () => {
-                    console.log ("test -------------------")
-                    /*
-                        await filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-
-                     */
-                    }
-                )
-
-
-
                 document.getElementById("mini-url-input").addEventListener("change",
                     async () => {
                         await filterPins();
@@ -805,6 +797,29 @@ document.addEventListener("DOMContentLoaded", async function () {
             return false;
         }
 
+        function searchGroupIds(groupIds, pin) {
+            const pinClassList = pin.classList;
+            if (groupIds.length == 0)
+            {
+                return true
+            }
+            if (pinClassList.length == 0) {
+                return false
+            }
+            if (groupIds != undefined) {
+                groupIds.forEach(groupId => {
+                    if (pinClassList.contains(groupId)) {
+                        console.log("pinClassList");
+                        console.log(pinClassList);
+                        console.log("groupId");
+                        console.log(groupId);
+                        return true
+                    }
+                })
+            }
+            return false;
+        }
+
         async function filterPins() {
             // les fiches
             const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
@@ -820,9 +835,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             // Parcours des cases à cocher pour obtenir les critères sélectionnés
             const selectedCriteria = [];
             checkedCheckboxes.forEach(function (checkbox) {
-                    selectedCriteria.push(checkbox.id);
-                }
-            );
+                selectedCriteria.push(checkbox.id);
+            })
+            const treeCheckedElementNodeList = document.querySelectorAll(".treejs-node__checked");
+            const treeCheckedElement = Array.from(treeCheckedElementNodeList);
+            const groupIds = treeCheckedElement.map(e => {
+                return e.nodeId
+            });
 
             // Parcours des éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
             pins.forEach(function (pin) {
@@ -836,10 +855,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const tagsIntersection = intersection(tagsIds, selectedCriteria)
                 const inputTextFound = searchInputText(textInputValue.toLowerCase(), pin);
                 const miniUrlMatch = (miniUrlInputValue == "" || pin.getAttribute("mini_url") == miniUrlInputValue);
-
+                const groupIdsFound = searchGroupIds(groupIds, pin)
 
                 if (tagsIntersection.length == selectedCriteria.length
-                    && ratingTest && inputTextFound && miniUrlMatch) {
+                    && ratingTest && inputTextFound && miniUrlMatch && groupIdsFound) {
                     pin.style.display = "block";
                 } else {
                     pin.style.display = "none";
