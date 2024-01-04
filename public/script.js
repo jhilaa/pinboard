@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     tagsData = record.fields.tags_name.map((tag_name, index) => ({
                         tag_name: tag_name.replace(" ", "&nbsp;"),
                         tag_color: record.fields.tags_color[index],
-                        tag_id: record.fields.tag[index]
+                        tag_id: record.fields.tags[index]
                     }));
                 }
                 if (record.fields.groups_name != undefined && record.fields.groups_name.length > 0) {
@@ -544,8 +544,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 if (Array.isArray(array)) {
                     array.forEach(record => {
                         const fields = record.fields;
-                        if (Array.isArray(fields.Group) && fields.Group.length > 0) {
-                            if (parent == fields.Group[0]) {
+                        if (Array.isArray(fields.group) && fields.group.length > 0) {
+                            if (parent == fields.group[0]) {
                                 children.push({
                                     id: record.id,
                                     text: fields.name,
