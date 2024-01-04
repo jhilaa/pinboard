@@ -14,6 +14,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         const domainLinkToggle = document.getElementById('domain_link_toggle');
         const groupCheckboxesList = document.getElementById("group_checkboxes_list");
         const pinContainer = document.getElementById("pin_container");
+        const ratingOperatorInput = document.getElementById("rating-operator");
+        const ratingValueInput = document.querySelector("#sidebar .rating");
+        const textInput = document.getElementById("text-input");
+        const miniUrlInput = document.getElementById("mini-url-input");
+        const tagCheckboxesContainer = document.getElementById("tag_checkboxes_container");
 
         function setCookie(cookieName, cookieValue) {
             const d = new Date();
@@ -191,12 +196,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                 globe.addEventListener("click", (e) => {
                     const pinElement = e.target.closest(".pin");
                     const mini_url_attribute = pinElement.getAttribute("mini_url");
-                    const mini_url_input = document.getElementById("mini-url-input");
 
-                    if (mini_url_input.value == mini_url_attribute) {
-                        mini_url_input.value = "";
+                    if (miniUrlInput.value == mini_url_attribute) {
+                        miniUrlInput.value = "";
                     } else {
-                        mini_url_input.value = mini_url_attribute;
+                        miniUrlInput.value = mini_url_attribute;
                     }
                     /******************/
                     const event = new Event('change', {
@@ -204,7 +208,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         cancelable: true // Permet d'annuler l'événement si nécessaire.
                     });
                     // Déclenchez l'événement sur l'élément input.
-                    mini_url_input.dispatchEvent(event);
+                    miniUrlInput.dispatchEvent(event);
                 })
 
 
@@ -258,6 +262,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 pinContainer.appendChild(clone);
             }
         }
+
         //** Création des slides la modal
         function createSlide(record) {
             const modalCarouselItem = document.createElement("div");
@@ -394,7 +399,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         //** DOMAIN DATA ******************************
-        async function getDomainData() {
+        async function getDomainsData() {
             try {
                 const apiUrl = `https://pinboard-hqnx.onrender.com/api/domain/all`;
                 const response = await fetch(apiUrl, {headers});
@@ -585,7 +590,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-
         async function createModalSlides() {
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
             const visiblePinsTagsArray = [...visiblePins];
@@ -655,9 +659,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 //** INITIALISATION ************************
         //Promise.all([getPinData(), getTagData()])
-        //Promise.all([getPinData(), getTagData(), getDomainData()])
+        //Promise.all([getPinData(), getTagData(), getDomainsData()])
         const domainCookie = getCookie("selectedDomain");
-        getDomainData()
+        getDomainsData()
             .then(async (results) => {
                 try {
                     // Handle the results of both promises
@@ -679,7 +683,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                         await handleDomainChoice(domain)
                     }
                 )
-                document.getElementById("mini-url-input").addEventListener("change",
+                // événement sur le changement du filtre sur l'url
+                miniUrlInput.addEventListener("change",
                     async () => {
                         await filterPins();
                         countPinsByTag();
@@ -689,7 +694,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 )
                 // Get all checked checkboxes
                 //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
-                document.getElementById("tag_checkboxes_container").addEventListener("change",
+                tagCheckboxesContainer.addEventListener("change",
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
@@ -702,7 +707,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 countPins();
                 createModalSlides();
 
-                document.getElementById("text-input").addEventListener("change",
+                textInput.addEventListener("change",
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
@@ -712,8 +717,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 )
 
-
-                document.getElementById("mini-url-input").addEventListener("change",
+                miniUrlInput.addEventListener("change",
                     async () => {
                         await filterPins();
                         countPinsByTag();
@@ -731,32 +735,61 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
 
 //** FILTRE *****************************/
-
-        function intersection(array1, array2) {
+        function getArraysIntersection (array1, array2) {
             const set1 = new Set(array1);
             const set2 = new Set(array2);
-            return [...set1].filter(element => set2.has(element));
+            const finalSet = [...set1].filter(element => set2.has(element));
+            // on renvoie un set qui est l'intersection des 2 tableaux de départ
+            return finalSet;
         }
 
-        function ratingComparaison(pinRating, ratingValue, ratingOperator) {
-            if (ratingOperator == 1) {
+        function checkPinTagsIdInSelectedTags(pin) {
+            const tags = Array.from(pin.querySelectorAll(".tag"))
+            // les tags de la fiche
+            const tagsId = tags.map(tag => {
+                return tag.id
+            })
+
+            const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
+            const selectedTags = [];
+            checkedCheckboxes.forEach(function (checkbox) {
+                    // les tags sélectionnés
+                    selectedTags.push(checkbox.id);
+                }
+            );
+
+            const tagsArraysIntersection = getArraysIntersection(tagsId, selectedTags)
+            // on test si on a autant d'élements dans la liste des éléments choisis
+            // que dans l'intersection entre les éléments choisis et les tags de la fiche
+            // (la fiche doit contenir au moins tous les tag sélectionnés)
+            return (tagsArraysIntersection.length == selectedTags.length);
+        }
+
+        function checkPinRating(pin) {
+            const pinRating = parseInt(pin.getAttribute("rating"))
+            const ratingOperatorValue = ratingOperatorInput.value;
+            const ratingValue = ratingValueInput.getAttribute("filter_value");
+
+            if (ratingOperatorValue == 1) {
                 return (pinRating > ratingValue)
             }
-            if (ratingOperator == 2) {
+            if (ratingOperatorValue == 2) {
                 return (pinRating >= ratingValue)
             }
-            if (ratingOperator == 3) {
+            if (ratingOperatorValue == 3) {
                 return (pinRating == ratingValue)
             }
-            if (ratingOperator == 4) {
+            if (ratingOperatorValue == 4) {
                 return (pinRating <= ratingValue)
             }
-            if (ratingOperator == 5) {
-                return (pinRating < ratingValue)
+            if (ratingOperatorInput == 5) {
+                return (pinRating < ratingValueInput)
             }
         }
 
-        function searchInputText(text, pin) {
+        function checkInputText(pin) {
+            const textInputValue = textInput.value;
+            //
             const name = pin.querySelector(".name").textContent;
             const url = pin.querySelector(".url").textContent;
             const description = pin.querySelector(".description").textContent;
@@ -767,73 +800,59 @@ document.addEventListener("DOMContentLoaded", async function () {
             })
             const concatLabels = (name.concat(url, description, tagsLabel)).toLowerCase();
 
-            if (text == "" || text == undefined || concatLabels == "") {
+            if (textInputValue == "" || textInputValue == undefined || concatLabels == "") {
                 return true
             }
-            if (concatLabels.includes(text)) {
+            if (concatLabels.includes(textInputValue.toLowerCase())) {
                 return true;
             }
             return false;
         }
 
-        function searchGroupIds(groupIds, pin) {
-            const pinGroupAttribute = pin.getAttribute("group");
-            if (groupIds.length == 0) {
+        function checkInputMiniUrlText(pin) {
+            const miniUrlInputValue = miniUrlInput.value;
+            if (miniUrlInputValue != "") {
+                pin.querySelector(".funnel").classList.add("bi-funnel-fill");
+                pin.querySelector(".funnel").classList.remove("bi-funnel");
+            } else {
+                pin.querySelector(".funnel").classList.remove("bi-funnel-fill");
+                pin.querySelector(".funnel").classList.add("bi-funnel");
+            }
+            return (miniUrlInputValue == "" || pin.getAttribute("mini_url") == miniUrlInputValue)
+        }
+
+        //TODO gérer le multi select (cf tags)
+        function checkPinGroupsIdInSelectedGroups(pin) {
+            const treeCheckedElementNodeList = document.querySelectorAll(".treejs-node__checked");
+            const treeCheckedElement = Array.from(treeCheckedElementNodeList);
+            const selectedGroupsId = treeCheckedElement.map(e => {
+                return e.nodeId
+            });
+
+            const pinGroupsAttribute = pin.getAttribute("group");
+            const pinGroupsAttributeArray = pinGroupsAttribute.split(",");
+            if (selectedGroupsId.length == 0) {
                 return true
             }
-            return (groupIds.includes(pinGroupAttribute))
+
+            return selectedGroupsId.some(groupId => pinGroupsAttributeArray.includes(groupId))
         }
 
         async function filterPins() {
             // les fiches
             const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
-            // filtre sur l'url
-            const miniUrlInputValue = document.getElementById("mini-url-input").value;
-            // filtre sur les mots-clé
-            const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
-            // filtre sur la note
-            const ratingOperator = parseInt(document.getElementById("rating-operator").value);
-            const ratingValue = parseInt(document.querySelector("#sidebar .rating").getAttribute("filter_value"));
-            // filtre sur les libellés
-            const textInputValue = document.getElementById("text-input").value;
-            // Parcours des cases à cocher pour obtenir les critères sélectionnés
-            const selectedCriteria = [];
-            checkedCheckboxes.forEach(function (checkbox) {
-                selectedCriteria.push(checkbox.id);
-            })
-            const treeCheckedElementNodeList = document.querySelectorAll(".treejs-node__checked");
-            const treeCheckedElement = Array.from(treeCheckedElementNodeList);
-            const groupIds = treeCheckedElement.map(e => {
-                return e.nodeId
-            });
-
             // Parcours des éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
             pins.forEach(function (pin) {
-                // tag
-                const tags = Array.from(pin.querySelectorAll(".tag"))
-                const tagsIds = tags.map(tag => {
-                    return tag.id
-                })
-                const pinRating = parseInt(pin.getAttribute("rating"));
-                const ratingTest = ratingComparaison(pinRating, ratingValue, ratingOperator);
-                const tagsIntersection = intersection(tagsIds, selectedCriteria)
-                const inputTextFound = searchInputText(textInputValue.toLowerCase(), pin);
-                const miniUrlMatch = (miniUrlInputValue == "" || pin.getAttribute("mini_url") == miniUrlInputValue);
-                const groupIdsFound = searchGroupIds(groupIds, pin)
+                const ratingTest = checkPinRating(pin);
+                const tagsTest = checkPinTagsIdInSelectedTags(pin)
+                const inputTextTest = checkInputText(pin);
+                const inputMiniUrlTextTest = checkInputMiniUrlText(pin);
+                const groupsTest = checkPinGroupsIdInSelectedGroups(pin)
 
-                if (tagsIntersection.length == selectedCriteria.length
-                    && ratingTest && inputTextFound && miniUrlMatch && groupIdsFound) {
+                if (ratingTest && tagsTest && inputTextTest && inputMiniUrlTextTest && groupsTest) {
                     pin.style.display = "block";
                 } else {
                     pin.style.display = "none";
-                }
-
-                if (miniUrlInputValue != "") {
-                    pin.querySelector(".funnel").classList.add("bi-funnel-fill");
-                    pin.querySelector(".funnel").classList.remove("bi-funnel");
-                } else {
-                    pin.querySelector(".funnel").classList.remove("bi-funnel-fill");
-                    pin.querySelector(".funnel").classList.add("bi-funnel");
                 }
 
             });
@@ -845,41 +864,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             createModalSlides();
         }
 
-        async function filterPinsAnd() {
-            // Get all checked checkboxes
-            const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
-            // Get all pin elements
-            const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
-
-            // Parcourez les cases à cocher pour obtenir les critères sélectionnés
-            const selectedCriteria = [];
-            checkedCheckboxes.forEach(function (checkbox) {
-                    selectedCriteria.push(checkbox.id);
-                }
-            );
-
-            // Parcourez les éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
-            pins.forEach(function (pin) {
-                const tags = Array.from(pin.querySelectorAll(".tag"))
-                const tagsIds = tags.map(tag => {
-                    return tag.id
-                })
-                const tagsIntersection = intersection(tagsIds, selectedCriteria)
-                const shouldShow = tagsIntersection.length == selectedCriteria.length;
-                console.log(shouldShow);
-                const slide = document.querySelector("#" + pin.id + ".carousel-item");
-                // Affichez ou masquez l'élément .pin en fonction du résultat
-                if (shouldShow) {
-                    pin.style.display = "block";
-                    slide.classList.remove("d-none");
-                } else {
-                    pin.style.display = "none";
-                    slide.classList.add("d-none");
-                }
-            });
-
-        }
-
         function countPins() {
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
             const visiblePinsTagsArray = [...visiblePins];
@@ -887,7 +871,6 @@ document.addEventListener("DOMContentLoaded", async function () {
             const starCountElement = document.getElementById("starCount");
             starCountElement.textContent = "(" + visiblePinsTagsArray.length + ")";
         }
-
         function countPinsByTag() {
             //--
             const visiblePinsTags = document.querySelectorAll('.pin:not([style*="display: none"]) .tag');
@@ -945,7 +928,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             });
         }
-
         function countPinsByUrl() {
             //--
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
