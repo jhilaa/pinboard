@@ -111,10 +111,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** Création des tuiles
         function createPins(pinData) {
             pinContainer.innerHTML = "";
-            let pinTagsData;
-            let pinGroupsData;
-
             for (const record of pinData.records) {
+                //TODO voir pour faire la même chose qu'avec les groupes
                 if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
                     pinTagsData = record.fields.tags_name.map((tag_name, index) => ({
                         tag_name: tag_name.replace(" ", "&nbsp;"),
@@ -576,13 +574,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                         this.values = [];
                         this.disables = [];
                     },
-                    onChange: function () {
-
-                        //await filterPinsAnd();
-                        filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
+                    onChange: async function () {
+                        await hideFilteredPins();
+                        await updatePinsCount()
+                        await createModalSlides()
 
                     }
                 });
@@ -630,12 +625,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             await createGroupTree(groupData)
                             // Create pin and modal
                             await createPins(pinData);
-                            await createModalSlides();
-                            await filterPins();
-                            countPinsByTag();
-                            countPinsByUrl();
-                            countPins();
-                            countPinsByGroup();
+                            //
+                            await hideFilteredPins();
+                            await updatePinsCount()
+                            await createModalSlides()
                             console.log("Data loaded successfully.");
 
                         } catch (error) {
@@ -684,7 +677,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     spinnerContainer.style.display = "none";
                 }
             })
-            .then(() => {
+            .then(async () => {
                 domainInput.addEventListener("change",
                     async () => {
                         const domain = domainInput.value;
@@ -694,47 +687,34 @@ document.addEventListener("DOMContentLoaded", async function () {
                 // événement sur le changement du filtre sur l'url
                 miniUrlInput.addEventListener("change",
                     async () => {
-                        await filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
+                        await hideFilteredPins();
+                        await updatePinsCount()
+                        await createModalSlides()
                     }
                 )
                 // Get all checked checkboxes
                 //document.getElementById("checkboxes_container").addEventListener("change", filterPinsOr);
                 tagCheckboxesContainer.addEventListener("change",
                     async () => {
-                        //await filterPinsAnd();
-                        await filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
+                        await hideFilteredPins();
+                        await updatePinsCount()
+                        await createModalSlides()
                     });
-                countPinsByTag();
-                countPinsByUrl();
-                countPins();
-                createModalSlides();
 
                 textInput.addEventListener("change",
                     async () => {
                         //await filterPinsAnd();
-                        await filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
+                        await hideFilteredPins();
+                        await updatePinsCount()
+                        await createModalSlides()
                     }
                 )
 
                 miniUrlInput.addEventListener("change",
                     async () => {
-                        await filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
+                        await hideFilteredPins();
+                        await updatePinsCount()
+                        await createModalSlides()
                     }
                 )
             })
@@ -747,7 +727,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
 
 //** FILTRE *****************************/
-        function getArraysIntersection (array1, array2) {
+        async function getArraysIntersection(array1, array2) {
             const set1 = new Set(array1);
             const set2 = new Set(array2);
             const finalSet = [...set1].filter(element => set2.has(element));
@@ -755,7 +735,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return finalSet;
         }
 
-        function checkPinTagsIdInSelectedTags(pin) {
+        async function checkPinTagsIdInSelectedTags(pin) {
             const tags = Array.from(pin.querySelectorAll(".tag"))
             // les tags de la fiche
             const tagsId = tags.map(tag => {
@@ -774,10 +754,10 @@ document.addEventListener("DOMContentLoaded", async function () {
             // on test si on a autant d'élements dans la liste des éléments choisis
             // que dans l'intersection entre les éléments choisis et les tags de la fiche
             // (la fiche doit contenir au moins tous les tag sélectionnés)
-            return (tagsArraysIntersection.length == selectedTags.length);
+            return (selectedTags.length == 0 || tagsArraysIntersection.length == selectedTags.length);
         }
 
-        function checkPinRating(pin) {
+        async function checkPinRating(pin) {
             const pinRating = parseInt(pin.getAttribute("rating"))
             const ratingOperatorValue = ratingOperatorInput.value;
             const ratingValue = ratingValueInput.getAttribute("filter_value");
@@ -799,7 +779,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-        function checkInputText(pin) {
+        async function checkInputText(pin) {
             const textInputValue = textInput.value;
             //
             const name = pin.querySelector(".name").textContent;
@@ -821,7 +801,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             return false;
         }
 
-        function checkInputMiniUrlText(pin) {
+        async function checkInputMiniUrlText(pin) {
             const miniUrlInputValue = miniUrlInput.value;
             if (miniUrlInputValue != "") {
                 pin.querySelector(".funnel").classList.add("bi-funnel-fill");
@@ -834,7 +814,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         //TODO gérer le multi select (cf tags)
-        function checkPinGroupsIdInSelectedGroups(pin) {
+        async function checkPinGroupsIdInSelectedGroups(pin) {
             const treeCheckedElementNodeList = document.querySelectorAll(".treejs-node__checked");
             const treeCheckedElement = Array.from(treeCheckedElementNodeList);
             const selectedGroupsId = treeCheckedElement.map(e => {
@@ -849,50 +829,79 @@ document.addEventListener("DOMContentLoaded", async function () {
             return true
         }
 
-        async function filterPins() {
+        // Mise à jour de l'affichage pour tenir compte des filtres
+        async function hideFilteredPins() {
             // les fiches
             const pins = Array.from(document.querySelectorAll(".pin:not(#pin_0)"));
             // Parcours des éléments .pin et vérifiez s'ils correspondent aux critères sélectionnés
-            pins.forEach(function (pin) {
-                const ratingTest = checkPinRating(pin);
-                const tagsTest = checkPinTagsIdInSelectedTags(pin)
-                const inputTextTest = checkInputText(pin);
-                const inputMiniUrlTextTest = checkInputMiniUrlText(pin);
-                const groupsTest = checkPinGroupsIdInSelectedGroups(pin)
+            for (const pin of pins) {
+                const ratingTest = await checkPinRating(pin);
+                const tagsTest = await checkPinTagsIdInSelectedTags(pin)
+                const inputTextTest = await checkInputText(pin);
+                const inputMiniUrlTextTest = await checkInputMiniUrlText(pin);
+                const groupsTest = await checkPinGroupsIdInSelectedGroups(pin)
 
                 if (ratingTest && tagsTest && inputTextTest && inputMiniUrlTextTest && groupsTest) {
                     pin.style.display = "block";
                 } else {
                     pin.style.display = "none";
                 }
-
-            });
-
-            //mise à jour du nombre de fiches sur les tags
-            countPinsByTag()
-            countPinsByUrl()
-            countPins();
-            createModalSlides();
+            }
         }
 
-        function countPins() {
+        async function updatePinsCount() {
+            await updatePinsCountForRatingFilter()
+            await updatePinsCountByTag();
+            await updatePinsCountByUrl();
+            await updatePinsCountByGroup();
+        }
+
+        async function updatePinsCountForRatingFilter() {
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
             const visiblePinsTagsArray = [...visiblePins];
-
+            //TODO à externaliser
             const starCountElement = document.getElementById("starCount");
             starCountElement.textContent = "(" + visiblePinsTagsArray.length + ")";
         }
 
-        function countPinsByGroup() {
-            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
-            let visiblePinsGroupsId = [];
-            visiblePins.forEach(pin => {
-                const pinGroupAttribute = pin.getAttribute("groups");
-                if (pinGroupAttribute != undefined && pinGroupAttribute != "") {
-                    const pinGroupIds = pinGroupAttribute.split(",");
-                    visiblePinsGroupsId = visiblePinsGroupsId.concat(pinGroupIds);
+        async function getChildNodes(treeJsNode) {
+            let allChildNodes = []
+            const childNodes = treeJsNode.getElementsByClassName("treejs-nodes");
+            if (childNodes != undefined) {
+                if (childNodes.length > 0) {
+                    for (const childNode of childNodes) {
+                        allChildNodes.concat(getChildNodes(childNode));
+                    }
+                    return allChildNodes
                 }
-            });
+                return []
+            }
+        }
+
+        async function updatePinsCountByGroup() {
+            /* LA */
+            /*
+            async function countPinsForTreeNode(treeJsNode, visiblePinsGroupsCountById) {
+                let nbPins = 0;
+                const treeJsNodeId = treeJsNode.nodeId
+                const childNodes = getChildNodes(treeJsNode)
+                if (childNodes != undefined) {
+                    if (childNodes.length == 0) {
+
+                        visiblePinsGroupsCountById.forEach((group) => {
+                            if (group.id == treeJsNodeId) {
+                                nbPins += group.count;
+                            }
+                        })
+                    } else {
+                        for (const node of childNodes) {
+                            nbPins += await countPinsForTreeNode(node, visiblePinsGroupsCountById);
+                        }
+                    }
+                }
+                return nbPins
+            }
+            */
 
             const visiblePinsGroupsCount = visiblePinsGroupsId.reduce((acc, id) => {
                 if (!acc[id]) {
@@ -903,36 +912,60 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return acc;
             }, {});
 
-            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
-           console.log ("visiblePinsGroupsCountById--------------------");
-           console.log (visiblePinsGroupsCountById);
+            /*****/
+            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
+            visiblePins.forEach(pin => {
+                const pinGroupAttribute = pin.getAttribute("groups");
+                if (pinGroupAttribute != undefined && pinGroupAttribute != null) {
+                    const pinGroupIds = pinGroupAttribute.split(",");
+                    visiblePinsGroupsId = visiblePinsGroupsId.concat(pinGroupIds);
+                }
+            });
 
-           //mise à jour des libelles
+
+            const treeNodes = document.getElementsByClassName("treejs-nodes");
+            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
+
+            for (const node of treeNodes) {
+                const childNodes = node.getElementsByClassName("treejs-nodes")
+                for (const childNode of childNodes) {
+                    for (const pin of visiblePins) {
+
+                    }
+            }
+
+
+
+
+            console.log("visiblePinsGroupsCountById--------------------");
+            console.log(visiblePinsGroupsCountById);
+
+            //mise à jour des libelles
             let treeJsNodes = document.querySelectorAll('.treejs-node');
-            if (treeJsNodes != undefined) {
-                if (treeJsNodes.length >0) {
-                    treeJsNodes.forEach((treeJsNode) => {
-                        const nodeId = treeJsNode.nodeId
+
+            let result = []
+            if (treeJsNodes != undefined && treeJsNodes != null) {
+                if (treeJsNodes.length > 0) {
+                    res
+
+                    for (const treeJsNode of treeJsNodes) {
+                        let nbPins = await countPinsForTreeNode(treeJsNode, visiblePinsGroupsCountById)
+                        //const nodeId = treeJsNode.nodeId
                         const treeJsLabel = treeJsNode.querySelector(".treejs-label");
                         const treeJsLabelAttribute = treeJsLabel.getAttribute("label");
-                        visiblePinsGroupsCountById.forEach((group)=> {
-                            if (group.id==nodeId) {
-                                treeJsLabel.innerHTML = treeJsLabelAttribute + "("+ group.count +")";
-                            }
-                        })
-
-                    })
-                    /*
-                    let test2 = test1[0].querySelector(".treejs-label");
-                    if (test2 != undefined) {
-                        test2.innerHTML= test2.getAttribute("label") + "** TEST **";
+                        treeJsLabel.innerHTML = treeJsLabelAttribute + " (" + nbPins + ")";
                     }
-                     */
                 }
+                /*
+                let test2 = test1[0].querySelector(".treejs-label");
+                if (test2 != undefined) {
+                    test2.innerHTML= test2.getAttribute("label") + "** TEST **";
+                }
+                 */
             }
         }
 
-        function countPinsByTag() {
+        async function updatePinsCountByTag() {
             //--
             const visiblePinsTags = document.querySelectorAll('.pin:not([style*="display: none"]) .tag');
             const visiblePinsTagsArray = [...visiblePinsTags];
@@ -989,7 +1022,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             });
         }
-        function countPinsByUrl() {
+
+        async function updatePinsCountByUrl() {
             //--
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
             const visiblePinsArray = [...visiblePins];
@@ -1031,15 +1065,14 @@ document.addEventListener("DOMContentLoaded", async function () {
         const rating_operator = document.getElementById("rating-operator");
         rating_operator.addEventListener("change",
             async () => {
-                await filterPins();
-                countPinsByTag();
-                countPinsByUrl();
-                countPins();
+                await hideFilteredPins();
+                await updatePinsCount()
+                await createModalSlides()
             })
 
         const filter_stars = document.querySelectorAll('#sidebar .star');
         filter_stars.forEach((star, index) => {
-            star.addEventListener('click', (e) => {
+            star.addEventListener('click', async (e) => {
                 e.preventDefault();
                 const rating_filter = e.target.closest(".rating");
                 const old_value = parseInt(rating_filter.getAttribute('filter_value'));
@@ -1051,7 +1084,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                 document.querySelector("#sidebar .rating").setAttribute("filter_value", new_value);
                 updateStarsDisplay(filter_stars, old_value, new_value);
-                filterPins();
+                //
+                await hideFilteredPins();
+                await updatePinsCount()
+                await createModalSlides()
 
             });
         });
