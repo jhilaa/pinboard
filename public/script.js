@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     body: JSON.stringify(postData)
                 });
                 const responseData = await response.json()
+                console.log("-- responseData---------")
                 console.log(responseData)
             } catch (error) {
                 console.error("Error making POST request:", error);
@@ -90,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     body: JSON.stringify(postData)
                 });
                 const responseData = await response.json()
+                console.log("-- responseData 2 ------------")
                 console.log(responseData)
             } catch (error) {
                 console.error("Error making POST request:", error);
@@ -109,23 +111,26 @@ document.addEventListener("DOMContentLoaded", async function () {
         //** Création des tuiles
         function createPins(pinData) {
             pinContainer.innerHTML = "";
-            let tagsData;
-            let groupsData;
+            let pinTagsData;
+            let pinGroupsData;
+
             for (const record of pinData.records) {
                 if (record.fields.tags_name != undefined && record.fields.tags_name.length > 0) {
-                    tagsData = record.fields.tags_name.map((tag_name, index) => ({
+                    pinTagsData = record.fields.tags_name.map((tag_name, index) => ({
                         tag_name: tag_name.replace(" ", "&nbsp;"),
                         tag_color: record.fields.tags_color[index],
                         tag_id: record.fields.tags[index]
                     }));
                 }
                 if (record.fields.groups_name != undefined && record.fields.groups_name.length > 0) {
-                    groupsData = record.fields.groups_name.map((group_name, index) => ({
+                    /*
+                    pinGroupsData = record.fields.groups_name.map((group_name, index) => ({
                         group_name: group_name.replace(" ", "&nbsp;"),
                         group_id: record.fields.groups[index]
                     }));
-                    console.log("groupsData");
-                    console.log(groupsData);
+                    */
+                    console.log("-- pinGroupsData ----------------");
+                    //console.log(pinGroupsData);
                 }
 
                 const pinModel = document.getElementById("pin_0");
@@ -141,7 +146,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                 clone.setAttribute("status", record.fields.status);
                 clone.setAttribute("mini_url", record.fields.mini_url);
                 clone.setAttribute("domain", record.fields.domain);
-                clone.setAttribute("group", record.fields.groups);
+                clone.setAttribute("groups", record.fields.groups);
+                clone.setAttribute("tags", record.fields.tags);
 
                 const pin_header = clone.querySelector(".pin_header");
                 pin_header.addEventListener("click", (e) => {
@@ -240,7 +246,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 
                 const tags = clone.querySelector(".pin_body .tags");
-                for (const tag of tagsData) {
+                for (const tag of pinTagsData) {
                     //
                     const newSpan = document.createElement("span");
                     newSpan.innerHTML = tag.tag_name;
@@ -249,13 +255,8 @@ document.addEventListener("DOMContentLoaded", async function () {
                     newSpan.classList.add("tag");
                     tags.appendChild(newSpan);
                     //
-                    clone.classList.add(tag.tag_id);
-                }
-                if (groupsData !== undefined && groupsData !== null) {
-                    for (const group of groupsData) {
-                        //
-                        clone.classList.add(group.group_id);
-                    }
+                    //AOT
+                    //clone.classList.add(tag.tag_id);
                 }
 
                 clone.style.display = "block";
@@ -585,6 +586,12 @@ document.addEventListener("DOMContentLoaded", async function () {
 
                     }
                 });
+
+                //stockage du label pour pouvoir le modifier
+                const treejsLabels = document.querySelectorAll(".treejs-label")
+                treejsLabels.forEach((treejsLabel) => {
+                    treejsLabel.setAttribute("label", treejsLabel.innerHTML);
+                })
             } catch (error) {
                 console.error("Error fetching or processing data:", error);
             }
@@ -628,6 +635,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                             countPinsByTag();
                             countPinsByUrl();
                             countPins();
+                            countPinsByGroup();
                             console.log("Data loaded successfully.");
 
                         } catch (error) {
@@ -690,6 +698,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
+                        countPinsByGroup();
                     }
                 )
                 // Get all checked checkboxes
@@ -701,6 +710,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
+                        countPinsByGroup();
                     });
                 countPinsByTag();
                 countPinsByUrl();
@@ -714,6 +724,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
+                        countPinsByGroup();
                     }
                 )
 
@@ -723,6 +734,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
+                        countPinsByGroup();
                     }
                 )
             })
@@ -828,14 +840,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             const selectedGroupsId = treeCheckedElement.map(e => {
                 return e.nodeId
             });
+            const pinGroupsAttribute = pin.getAttribute("groups");
 
-            const pinGroupsAttribute = pin.getAttribute("group");
-            const pinGroupsAttributeArray = pinGroupsAttribute.split(",");
-            if (selectedGroupsId.length == 0) {
-                return true
+            if (selectedGroupsId.length != 0 && pinGroupsAttribute != undefined) {
+                const pinGroupsAttributeArray = pinGroupsAttribute.split(",");
+                return selectedGroupsId.some(groupId => pinGroupsAttributeArray.includes(groupId))
             }
-
-            return selectedGroupsId.some(groupId => pinGroupsAttributeArray.includes(groupId))
+            return true
         }
 
         async function filterPins() {
@@ -871,6 +882,56 @@ document.addEventListener("DOMContentLoaded", async function () {
             const starCountElement = document.getElementById("starCount");
             starCountElement.textContent = "(" + visiblePinsTagsArray.length + ")";
         }
+
+        function countPinsByGroup() {
+            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
+            let visiblePinsGroupsId = [];
+            visiblePins.forEach(pin => {
+                const pinGroupAttribute = pin.getAttribute("groups");
+                if (pinGroupAttribute != undefined && pinGroupAttribute != "") {
+                    const pinGroupIds = pinGroupAttribute.split(",");
+                    visiblePinsGroupsId = visiblePinsGroupsId.concat(pinGroupIds);
+                }
+            });
+
+            const visiblePinsGroupsCount = visiblePinsGroupsId.reduce((acc, id) => {
+                if (!acc[id]) {
+                    acc[id] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
+                } else {
+                    acc[id]++; // Incrémentez le compteur si le nom existe déjà
+                }
+                return acc;
+            }, {});
+
+            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
+           console.log ("visiblePinsGroupsCountById--------------------");
+           console.log (visiblePinsGroupsCountById);
+
+           //mise à jour des libelles
+            let treeJsNodes = document.querySelectorAll('.treejs-node');
+            if (treeJsNodes != undefined) {
+                if (treeJsNodes.length >0) {
+                    treeJsNodes.forEach((treeJsNode) => {
+                        const nodeId = treeJsNode.nodeId
+                        const treeJsLabel = treeJsNode.querySelector(".treejs-label");
+                        const treeJsLabelAttribute = treeJsLabel.getAttribute("label");
+                        visiblePinsGroupsCountById.forEach((group)=> {
+                            if (group.id==nodeId) {
+                                treeJsLabel.innerHTML = treeJsLabelAttribute + "("+ group.count +")";
+                            }
+                        })
+
+                    })
+                    /*
+                    let test2 = test1[0].querySelector(".treejs-label");
+                    if (test2 != undefined) {
+                        test2.innerHTML= test2.getAttribute("label") + "** TEST **";
+                    }
+                     */
+                }
+            }
+        }
+
         function countPinsByTag() {
             //--
             const visiblePinsTags = document.querySelectorAll('.pin:not([style*="display: none"]) .tag');
