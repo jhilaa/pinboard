@@ -750,7 +750,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             );
 
-            const tagsArraysIntersection = getArraysIntersection(tagsId, selectedTags)
+            const tagsArraysIntersection = await getArraysIntersection(tagsId, selectedTags)
             // on test si on a autant d'élements dans la liste des éléments choisis
             // que dans l'intersection entre les éléments choisis et les tags de la fiche
             // (la fiche doit contenir au moins tous les tag sélectionnés)
@@ -878,53 +878,12 @@ document.addEventListener("DOMContentLoaded", async function () {
             }
         }
 
-        async function updatePinsCountByGroup() {
-            /* LA */
-            /*
-            async function countPinsForTreeNode(treeJsNode, visiblePinsGroupsCountById) {
-                let nbPins = 0;
-                const treeJsNodeId = treeJsNode.nodeId
-                const childNodes = getChildNodes(treeJsNode)
-                if (childNodes != undefined) {
-                    if (childNodes.length == 0) {
-
-                        visiblePinsGroupsCountById.forEach((group) => {
-                            if (group.id == treeJsNodeId) {
-                                nbPins += group.count;
-                            }
-                        })
-                    } else {
-                        for (const node of childNodes) {
-                            nbPins += await countPinsForTreeNode(node, visiblePinsGroupsCountById);
-                        }
-                    }
-                }
-                return nbPins
-            }
-            */
-
-            const visiblePinsGroupsCount = visiblePinsGroupsId.reduce((acc, id) => {
-                if (!acc[id]) {
-                    acc[id] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
-                } else {
-                    acc[id]++; // Incrémentez le compteur si le nom existe déjà
-                }
-                return acc;
-            }, {});
-
-            /*****/
-            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
-            visiblePins.forEach(pin => {
-                const pinGroupAttribute = pin.getAttribute("groups");
-                if (pinGroupAttribute != undefined && pinGroupAttribute != null) {
-                    const pinGroupIds = pinGroupAttribute.split(",");
-                    visiblePinsGroupsId = visiblePinsGroupsId.concat(pinGroupIds);
-                }
-            });
-
-
+        async function updatePinsCountByGroup_old() {
             const treeNodes = document.getElementsByClassName("treejs-nodes");
-            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
+            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({
+                id,
+                count
+            }));
 
             for (const node of treeNodes) {
                 const childNodes = node.getElementsByClassName("treejs-nodes")
@@ -932,39 +891,93 @@ document.addEventListener("DOMContentLoaded", async function () {
                     for (const pin of visiblePins) {
 
                     }
-            }
+                }
 
 
+                //mise à jour des libelles
+                let treeJsNodes = document.querySelectorAll('.treejs-node');
 
+                let result = []
+                if (treeJsNodes != undefined && treeJsNodes != null) {
+                    if (treeJsNodes.length > 0) {
+                        res
 
-            console.log("visiblePinsGroupsCountById--------------------");
-            console.log(visiblePinsGroupsCountById);
-
-            //mise à jour des libelles
-            let treeJsNodes = document.querySelectorAll('.treejs-node');
-
-            let result = []
-            if (treeJsNodes != undefined && treeJsNodes != null) {
-                if (treeJsNodes.length > 0) {
-                    res
-
-                    for (const treeJsNode of treeJsNodes) {
-                        let nbPins = await countPinsForTreeNode(treeJsNode, visiblePinsGroupsCountById)
-                        //const nodeId = treeJsNode.nodeId
-                        const treeJsLabel = treeJsNode.querySelector(".treejs-label");
-                        const treeJsLabelAttribute = treeJsLabel.getAttribute("label");
-                        treeJsLabel.innerHTML = treeJsLabelAttribute + " (" + nbPins + ")";
+                        for (const treeJsNode of treeJsNodes) {
+                            let nbPins = await countPinsForTreeNode(treeJsNode, visiblePinsGroupsCountById)
+                            //const nodeId = treeJsNode.nodeId
+                            const treeJsLabel = treeJsNode.querySelector(".treejs-label");
+                            const treeJsLabelAttribute = treeJsLabel.getAttribute("label");
+                            treeJsLabel.innerHTML = treeJsLabelAttribute + " (" + nbPins + ")";
+                        }
                     }
                 }
-                /*
-                let test2 = test1[0].querySelector(".treejs-label");
-                if (test2 != undefined) {
-                    test2.innerHTML= test2.getAttribute("label") + "** TEST **";
-                }
-                 */
             }
         }
 
+        async function updatePinsCountByGroup() {
+            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
+            const visiblePinsArray = [...visiblePins];
+            let visiblePinsGroupsIds = ""
+            for (const pin of visiblePinsArray) {
+                visiblePinsGroupsIds = visiblePinsGroupsIds.concat("," ,pin.getAttribute("groups"));
+            }
+            let visiblePinsGroupsIdsArray = visiblePinsGroupsIds.split(",")
+
+            // pour les groupes
+            const visiblePinsGroupsCount = visiblePinsGroupsIdsArray.reduce((acc, id) => {
+                //const id = objet.id;
+                if (!acc[id]) {
+                    acc[id] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
+                } else {
+                    acc[id]++; // Incrémentez le compteur si le nom existe déjà
+                }
+                return acc;
+            }, {});
+            //
+            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
+            //
+
+            //update
+            const treeNodes = document.querySelectorAll(".treejs-node");
+            for (const node of treeNodes) {
+                let count = 0;
+                for (const groupCount of visiblePinsGroupsCountById) {
+                    if (groupCount.id == node.nodeId) {
+                        count += groupCount.count
+                    }
+                    const labelElement = node.querySelector(".treejs-label")
+                    const labelAttribute = node.querySelector(".treejs-label").getAttribute("label")
+
+                    if (count == 0) {
+                        labelElement.classList.add("groupCount0");
+                        labelElement.innerText = labelAttribute;
+                    } else {
+                        labelElement.classList.remove("groupCount0")
+                        labelElement.innerHTML = labelAttribute + "<span class=\"groupCount\"> (" + count + ")</span>";
+                    }
+                }
+            }
+
+            //TODO class pour la mise en forme des count = 0
+            /*
+                if (labelElement) {
+                    // Mettre à jour le contenu textuel de l'objet label
+                    //labelElement.textContent = `${labelElement.textContent} (${group.count})`;
+                    if (group.count == 0) {
+                        labelElement.classList.add("groupCount0");
+                        //labelElement.textContent = labelElement.getAttribute("name");
+                        labelElement.innerHTML = labelElement.getAttribute("name");
+                    } else {
+                        labelElement.classList.remove("groupCount0");
+                        //labelElement.textContent = labelElement.getAttribute("name") + " (" + group.count + ")";
+                        labelElement.innerHTML = labelElement.getAttribute("name") + "<span class=\"groupCount\"> (" + group.count + ")</span>";
+                    }
+
+                }
+             */
+        }
+
+        //TODO voir si c'est simplifiable (cf groupe)
         async function updatePinsCountByTag() {
             //--
             const visiblePinsTags = document.querySelectorAll('.pin:not([style*="display: none"]) .tag');

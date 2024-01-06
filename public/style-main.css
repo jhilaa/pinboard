@@ -318,6 +318,15 @@ container-fluid {
     font-size: 65%
 }
 
+.groupCount0 {
+    font-style: italic;
+    opacity: 60%;
+}
+
+.groupCount {
+    font-size: 65%
+}
+
 #starCount {
     font-size: 65%;
     margin-top: 9px;
