@@ -300,6 +300,12 @@ container-fluid {
     }
 }
 
+.groupCount0 {
+    font-style: italic;
+    opacity: 60%;
+}
+
+
 .tagCount0 {
     font-style: italic;
     opacity: 60%;

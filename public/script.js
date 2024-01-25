@@ -587,6 +587,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }
                 });
 
+                const treejsNodes = document.querySelectorAll(".treejs-node")
+                treejsNodes.forEach((treejsNode) => {
+                    treejsNode.setAttribute("id", treejsNode.nodeId);
+                    treejsNode.setAttribute("count", 0);
+                })
+
                 //stockage du label pour pouvoir le modifier
                 const treejsLabels = document.querySelectorAll(".treejs-label")
                 treejsLabels.forEach((treejsLabel) => {
@@ -747,7 +753,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
 
 //** FILTRE *****************************/
-        function getArraysIntersection (array1, array2) {
+        function getArraysIntersection(array1, array2) {
             const set1 = new Set(array1);
             const set2 = new Set(array2);
             const finalSet = [...set1].filter(element => set2.has(element));
@@ -893,7 +899,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     visiblePinsGroupsId = visiblePinsGroupsId.concat(pinGroupIds);
                 }
             });
-
+            //
             const visiblePinsGroupsCount = visiblePinsGroupsId.reduce((acc, id) => {
                 if (!acc[id]) {
                     acc[id] = 1; // Initialisez le compteur à 1 si c'est la première occurrence
@@ -902,34 +908,79 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
                 return acc;
             }, {});
-
+            //
             const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
-           console.log ("visiblePinsGroupsCountById--------------------");
-           console.log (visiblePinsGroupsCountById);
+            console.log("visiblePinsGroupsCountById--------------------");
+            console.log(visiblePinsGroupsCountById);
 
-           //mise à jour des libelles
+            /*
+                       const treeJsNodesGroups = document.querySelectorAll('.treejs-nodes');
+                       for (let i=0; i<treeJsNodesGroups.length;i++) {
+                           const treeJsNodesGroup = treeJsNodesGroups[i];
+                           const treeJsNodesGroupLabel = treeJsNodesGroup.querySelector(".treejs-node:first-child.treejs-label");
+
+                           //const treeJsNodesGroupNodes = treeJsNodesGroup.querySelectorAll("")
+                       }
+                       */
+
+            /** REPRENDRE ICI ***/
+                //mise à jour des libelles des feuilles
             let treeJsNodes = document.querySelectorAll('.treejs-node');
             if (treeJsNodes != undefined) {
-                if (treeJsNodes.length >0) {
+                if (treeJsNodes.length > 0) {
                     treeJsNodes.forEach((treeJsNode) => {
+                            const children = treeJsNode.querySelector(".treejs-node");
+                            if (children == undefined) { // pas d'enfant, c'est donc une feuille
+                                //const nodeId = treeJsNode.nodeId
+                                const nodeId = treeJsNode.getAttribute("id");
+                                const treeJsLabel = treeJsNode.querySelector(".treejs-label");
+                                const treeJsLabelAttribute = treeJsLabel.getAttribute("label");
+                                let count = 0;
+                                visiblePinsGroupsCountById.forEach((group) => {
+                                    if (group.id == nodeId) {
+                                        count = group.count.toString();
+                                        return;
+                                    }
+                                })
+                                treeJsLabel.innerHTML = treeJsLabelAttribute + " (" + count + ")";
+                                treeJsNode.setAttribute("count", count);
+
+                                if (count == 0) {
+                                    treeJsLabel.classList.add("groupCount0");
+                                } else {
+                                    treeJsLabel.classList.remove("groupCount0");
+                                }
+                                return;
+                            }
+                        }
+                    )
+                }
+            }
+
+// groupes
+            let treeJsNodesGroups = document.querySelectorAll(".treejs-nodes");
+            /*if (treeJsNodesGroups != undefined) {
+                let label = document.querySelectorAll( ".treejs-node:first-child");
+                if (treeJsNodesGroups.length >0) {
+                    treeJsNodesGroups.forEach((treeJsNode) => {
+
                         const nodeId = treeJsNode.nodeId
                         const treeJsLabel = treeJsNode.querySelector(".treejs-label");
                         const treeJsLabelAttribute = treeJsLabel.getAttribute("label");
                         visiblePinsGroupsCountById.forEach((group)=> {
                             if (group.id==nodeId) {
-                                treeJsLabel.innerHTML = treeJsLabelAttribute + "("+ group.count +")";
+                                treeJsLabel.innerHTML = treeJsLabelAttribute + " ("+ group.count +")";
+                                treeJsLabel.classList.remove("groupCount0");
+                            }
+                            else  {
+                                treeJsLabel.innerHTML = treeJsLabelAttribute + " (??)";
+                                treeJsLabel.classList.add("groupCount0");
                             }
                         })
 
                     })
-                    /*
-                    let test2 = test1[0].querySelector(".treejs-label");
-                    if (test2 != undefined) {
-                        test2.innerHTML= test2.getAttribute("label") + "** TEST **";
-                    }
-                     */
                 }
-            }
+            }  */
         }
 
         function countPinsByTag() {
@@ -989,6 +1040,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 }
             });
         }
+
         function countPinsByUrl() {
             //--
             const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
