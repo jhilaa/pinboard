@@ -909,7 +909,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return acc;
             }, {});
             //
-            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({id, count}));
+            const visiblePinsGroupsCountById = Object.entries(visiblePinsGroupsCount).map(([id, count]) => ({
+                id,
+                count
+            }));
 
             //mise à jour des libelles des feuilles
             let treeJsNodes = document.querySelectorAll('.treejs-node');
@@ -948,26 +951,28 @@ document.addEventListener("DOMContentLoaded", async function () {
             let treeJsNodesGroups = document.querySelectorAll(".treejs-nodes");
             if (treeJsNodesGroups != undefined) {
                 if (treeJsNodesGroups.length > 0) {
-
                     treeJsNodesGroups.forEach((treeJsNode) => {
-                        const parentNode = treeJsNode.closest(".treejs-node")
-                        if (parentNode != undefined) {
-                            const treeJsLabel = parentNode.querySelector(".treejs-label");
-                            if (treeJsLabel != undefined) {
-                                const treeJsNodes = treeJsNode.querySelectorAll(".treejs-node");
-                                let sumNode = 0;
-                                if (treeJsNodes != undefined) {
-                                    if (treeJsNodes.length > 0) {
-                                        treeJsNodes.forEach((node) => {
-                                            let nodeCount = node.getAttribute("count")
-                                            sumNode += parseInt(nodeCount);
-                                        })
-                                    }
+                            const treeJsNodes = treeJsNode.querySelectorAll(".treejs-node");
+                            let filteredIds = [];
+                            if (treeJsNodes != undefined) {
+                                if (treeJsNodes.length > 0) {
+                                    treeJsNodes.forEach((node) => {
+                                        filteredIds.push(node.getAttribute("id"));
+                                    })
                                 }
-                                treeJsLabel.textContent = treeJsLabel.getAttribute("label") + " (" + sumNode + ")";
+                            }
+                            const querySelectorFilter = filteredIds.map(id => '.pin[groups*="' + id + '"]').join(', ');
+                            const filteredPins = document.querySelectorAll(querySelectorFilter + ' [style*="display: block"]')
+
+                            const parentNode = treeJsNode.closest(".treejs-node")
+                            if (parentNode != undefined) {
+                                const treeJsLabel = parentNode.querySelector(".treejs-label");
+                                if (treeJsLabel != undefined) {
+                                    treeJsLabel.textContent = treeJsLabel.getAttribute("label") + " (" + filteredPins.length + ")";
+                                }
                             }
                         }
-                    })
+                    )
                 }
             }
         }
