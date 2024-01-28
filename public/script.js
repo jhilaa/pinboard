@@ -583,7 +583,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
-
+                        //countPinsByGroup();
                     }
                 });
 
@@ -721,6 +721,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 countPinsByTag();
                 countPinsByUrl();
                 countPins();
+                countPinsByGroup();
                 createModalSlides();
 
                 textInput.addEventListener("change",
@@ -875,10 +876,11 @@ document.addEventListener("DOMContentLoaded", async function () {
             });
 
             //mise à jour du nombre de fiches sur les tags
-            countPinsByTag()
-            countPinsByUrl()
-            countPins();
-            createModalSlides();
+            await countPinsByTag()
+            await countPinsByUrl()
+            await countPins();
+            await countPinsByGroup();
+            await createModalSlides();
         }
 
         function countPins() {
@@ -890,7 +892,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         function countPinsByGroup() {
-            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"])');
+            const visiblePins = document.querySelectorAll('.pin:not([style*="display: none"]):not(#pin_0)');
             let visiblePinsGroupsId = [];
             visiblePins.forEach(pin => {
                 const pinGroupAttribute = pin.getAttribute("groups");
@@ -961,14 +963,20 @@ document.addEventListener("DOMContentLoaded", async function () {
                                     })
                                 }
                             }
-                            const querySelectorFilter = filteredIds.map(id => '.pin[groups*="' + id + '"]').join(', ');
-                            const filteredPins = document.querySelectorAll(querySelectorFilter + ' [style*="display: block"]')
+                            const querySelectorFilter = filteredIds.map(id => '.pin[groups="' + id + '"]').join(', ');
+                            const filteredPins = document.querySelectorAll(querySelectorFilter + ' [style*="display: none"]')
+                            const count = filteredPins.length;
 
                             const parentNode = treeJsNode.closest(".treejs-node")
                             if (parentNode != undefined) {
                                 const treeJsLabel = parentNode.querySelector(".treejs-label");
                                 if (treeJsLabel != undefined) {
-                                    treeJsLabel.textContent = treeJsLabel.getAttribute("label") + " (" + filteredPins.length + ")";
+                                    treeJsLabel.textContent = treeJsLabel.getAttribute("label") + " (" + count + ")";
+                                    if (count == 0) {
+                                        treeJsLabel.classList.add("groupCount0");
+                                    } else {
+                                        treeJsLabel.classList.remove("groupCount0");
+                                    }
                                 }
                             }
                         }
@@ -1081,6 +1089,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 countPinsByTag();
                 countPinsByUrl();
                 countPins();
+                countPinsByGroup();
             })
 
         const filter_stars = document.querySelectorAll('#sidebar .star');
