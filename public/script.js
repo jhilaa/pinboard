@@ -576,13 +576,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                         this.values = [];
                         this.disables = [];
                     },
-                    onChange: function () {
+                    onChange: async function () {
 
                         //await filterPinsAnd();
-                        filterPins();
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
+                        await filterPins();
+                        //countPinsByTag();
+                        //countPinsByUrl();
+                        //countPins();
                         //countPinsByGroup();
                     }
                 });
@@ -638,10 +638,10 @@ document.addEventListener("DOMContentLoaded", async function () {
                             await createPins(pinData);
                             await createModalSlides();
                             await filterPins();
-                            countPinsByTag();
-                            countPinsByUrl();
-                            countPins();
-                            countPinsByGroup();
+                            //countPinsByTag();
+                            //countPinsByUrl();
+                            //countPins();
+                            //countPinsByGroup();
                             console.log("Data loaded successfully.");
 
                         } catch (error) {
@@ -701,10 +701,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                 miniUrlInput.addEventListener("change",
                     async () => {
                         await filterPins();
+                        /*
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
                         countPinsByGroup();
+                         */
                     }
                 )
                 // Get all checked checkboxes
@@ -713,10 +715,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
+                        /*
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
                         countPinsByGroup();
+                         */
                     });
                 countPinsByTag();
                 countPinsByUrl();
@@ -728,20 +732,24 @@ document.addEventListener("DOMContentLoaded", async function () {
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
+                        /*
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
                         countPinsByGroup();
+                        */
                     }
                 )
 
                 miniUrlInput.addEventListener("change",
                     async () => {
                         await filterPins();
+                        /*
                         countPinsByTag();
                         countPinsByUrl();
                         countPins();
                         countPinsByGroup();
+                        */
                     }
                 )
             })
@@ -1086,10 +1094,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         rating_operator.addEventListener("change",
             async () => {
                 await filterPins();
+                /*
                 countPinsByTag();
                 countPinsByUrl();
                 countPins();
                 countPinsByGroup();
+                 */
             })
 
         const filter_stars = document.querySelectorAll('#sidebar .star');
