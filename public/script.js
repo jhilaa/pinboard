@@ -259,6 +259,11 @@ document.addEventListener("DOMContentLoaded", async function () {
                     //clone.classList.add(tag.tag_id);
                 }
 
+                const selected_checkbox = clone.querySelector(".pin_header .selection_input");
+                selected_checkbox.addEventListener("click", (e) => {
+                    e.stopPropagation()
+                })
+
                 clone.style.display = "block";
                 pinContainer.appendChild(clone);
             }
