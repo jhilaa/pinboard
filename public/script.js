@@ -49,8 +49,8 @@ document.addEventListener("DOMContentLoaded", async function () {
 
         //** click sur les étoiles
         async function updateRating(id, rating) {
-            method = "PATCH";
-            postData = {
+            let method = "PATCH";
+            let postData = {
                 "fields": {
                     "rating": rating.toString()
                 }
@@ -74,8 +74,8 @@ document.addEventListener("DOMContentLoaded", async function () {
         }
 
         async function updateStatus(id, status) {
-            method = "PATCH";
-            postData = {
+            let method = "PATCH";
+            let postData = {
                 "fields": {
                     "status": status.toString()
                 }
@@ -92,6 +92,34 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
                 const responseData = await response.json()
                 console.log("-- responseData 2 ------------")
+                console.log(responseData)
+            } catch (error) {
+                console.error("Error making POST request:", error);
+            }
+        }
+
+        async function updateSelected(id, selected) {
+            console.log ("selected ---------------");
+            console.log (id);
+            console.log (selected);
+            let method = "PATCH";
+            let postData = {
+                "fields": {
+                    "selected": selected
+                }
+            }
+            try {
+                //const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins", {
+                const response = await fetch("https://api.airtable.com/v0/app7zNJoX11DY99UA/Pins/" + id, {
+                    method: method,
+                    headers: {
+                        "Authorization": " Bearer " + token,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(postData)
+                });
+                const responseData = await response.json()
+                console.log("-- responseData 3 ------------")
                 console.log(responseData)
             } catch (error) {
                 console.error("Error making POST request:", error);
@@ -123,14 +151,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     }));
                 }
                 if (record.fields.groups_name != undefined && record.fields.groups_name.length > 0) {
-                    /*
-                    pinGroupsData = record.fields.groups_name.map((group_name, index) => ({
-                        group_name: group_name.replace(" ", "&nbsp;"),
-                        group_id: record.fields.groups[index]
-                    }));
-                    */
                     console.log("-- pinGroupsData ----------------");
-                    //console.log(pinGroupsData);
                 }
 
                 const pinModel = document.getElementById("pin_0");
@@ -148,6 +169,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 clone.setAttribute("domain", record.fields.domain);
                 clone.setAttribute("groups", record.fields.groups);
                 clone.setAttribute("tags", record.fields.tags);
+                clone.querySelector(".selection_input").checked = record.fields.selected
 
                 const pin_header = clone.querySelector(".pin_header");
                 pin_header.addEventListener("click", (e) => {
@@ -197,6 +219,19 @@ document.addEventListener("DOMContentLoaded", async function () {
                     await updateStatus(pinElement.id, new_status);
                     spinnerPinContainerElement.style.display = "none";
                 })
+
+                const pin_selected = clone.querySelector(".selection_input")
+                pin_selected.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    const pinElement = e.target.closest(".pin");
+                    const spinnerPinContainerElement = pinElement.querySelector(".spinnerPinContainer");
+                    spinnerPinContainerElement.style.display = "flex";
+                    await updateSelected(pinElement.id, pin_selected.checked);
+                    spinnerPinContainerElement.style.display = "none";
+                })
+
+
+
 
                 const globe = clone.querySelector(".bi-globe");
                 globe.addEventListener("click", (e) => {
@@ -359,6 +394,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                     img_url: pinObject.querySelector(".pin_image").src,
                     rating: pinObject.getAttribute('rating'),
                     status: pinObject.getAttribute('status'),
+                    selected: pinObject.querySelector('.selection_input').checked,
                     tags: []
                 }
 
@@ -720,12 +756,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
-                        /*
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
-                         */
                     });
                 countPinsByTag();
                 countPinsByUrl();
@@ -737,24 +767,12 @@ document.addEventListener("DOMContentLoaded", async function () {
                     async () => {
                         //await filterPinsAnd();
                         await filterPins();
-                        /*
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
-                        */
                     }
                 )
 
                 miniUrlInput.addEventListener("change",
                     async () => {
                         await filterPins();
-                        /*
-                        countPinsByTag();
-                        countPinsByUrl();
-                        countPins();
-                        countPinsByGroup();
-                        */
                     }
                 )
             })
