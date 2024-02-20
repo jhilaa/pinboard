@@ -183,8 +183,6 @@ button#sidebarCollapses {
     font-size: 15px;
     outline-offset: 0px;
     max-width: 80%;
-    position: relative;
-    top: 10px;
 }
 
 a[data-toggle="collapse"] {
@@ -275,7 +273,6 @@ container-fluid {
 
 }
 
-
 .pin_header .bi-check {
 		color: white;
 		font-size: 1.4em
@@ -358,3 +355,112 @@ container-fluid {
     text-decoration: none;
     transition: all 0.3s;
 }
+
+#sidebar #selection_buttons {
+    margin-top: 10px;
+    /* width: 300px; */
+}
+
+#sidebar #selection_buttons div {
+    background-color: white;
+    color: black;
+    border: 1px solid lightgrey;
+    width: 50px;
+    height: 25px;
+    display: flex;
+    /* justify-content: center; */
+    /* position: relative; */
+}
+
+#sidebar #selection_buttons #mask_not_selected_button {
+    border-radius: 7px 0px 0px 7px;
+    background-color: rgb(100,100,100,0);
+    color: black;
+    border: 1px solid lightgrey;
+    width: 50px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+#sidebar #selection_buttons #mask_selected_button {
+    border-radius: 0px 7px 7px 0px;
+    background-color: rgb(100,100,100,0);
+    color: black;
+    border: 1px solid lightgrey;
+    width: 50px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+
+
+#mask_not_selected_button {
+    position: absolute;
+}
+
+.selected input:hover {
+    background-color: red;
+}
+
+.selected input:active {
+    background-color: yellow;
+}
+
+#input_field {
+    margin-top: 10px
+;
+}
+
+.checkbox_container {
+    width: 40px;
+    height: 27px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border: 0.5px solid lightgray; */
+    position: relative;
+}
+
+.checkboxes_container {
+    display: flex;
+    margin-top: 10px;
+    width: 80px;
+    position: relative;
+    height: 27px;
+}
+
+#checkbox-off {
+    border-radius: 5px 0px 0px 5px;
+}
+
+#checkbox-on {
+    border-radius: 0px 5px 5px 0px;
+}
+
+.checkbox_container.selected {
+    background-color: lightgrey;
+}
+
+.mask {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: rgb(0,0,0,0);
+    /* border: 1px solid black; */
+}
+
+
+.box{
+    box-shadow: -5px -5px 9px rgba(255,255,255,0.45), 5px 5px 9px rgba(94,104,121,0.3);
+}
+.box2 {
+    box-shadow: inset 1px 0px 6px rgba(255, 255, 255, 1), inset 4px -2px -3px rgba(94, 104, 121, 1);
+}
+
+
+
+
+

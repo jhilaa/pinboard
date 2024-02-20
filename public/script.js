@@ -254,9 +254,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                     newSpan.id = tag.tag_id
                     newSpan.classList.add("tag");
                     tags.appendChild(newSpan);
-                    //
-                    //AOT
-                    //clone.classList.add(tag.tag_id);
                 }
 
                 const selected_checkbox = clone.querySelector(".pin_header .selection_input");
@@ -439,6 +436,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const tagItemInput = document.createElement("input");
                 const tagItemLabel = document.createElement("label");
                 tagItemInput.classList.add("form-check-input");
+                tagItemInput.classList.add("form-check-input-tag");
                 tagItemInput.type = "checkbox";
                 tagItemInput.value = "";
                 tagItemInput.id = tag.id;
@@ -467,6 +465,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const domainItemInput = document.createElement("input");
                 const domainItemLabel = document.createElement("label");
                 domainItemInput.classList.add("form-check-input");
+                domainItemInput.classList.add("form-check-input-domain");
                 domainItemInput.type = "radio";
                 domainItemInput.id = domain;
                 domainItemInput.name = "domain";
@@ -514,6 +513,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 const urlItemInput = document.createElement("input");
                 const urlItemLabel = document.createElement("label");
                 urlItemInput.classList.add("form-check-input");
+                urlItemInput.classList.add("form-check-input-url");
                 urlItemInput.type = "radio";
                 urlItemInput.id = url;
                 urlItemInput.name = "url";
@@ -782,7 +782,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 return tag.id
             })
 
-            const checkedCheckboxes = Array.from(document.querySelectorAll("input[type=checkbox]:checked"));
+            const checkedCheckboxes = Array.from(document.querySelectorAll(".form-check-input-tag[type=checkbox]:checked"));
             const selectedTags = [];
             checkedCheckboxes.forEach(function (checkbox) {
                     // les tags sélectionnés
