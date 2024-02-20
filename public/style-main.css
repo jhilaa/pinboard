@@ -432,11 +432,12 @@ container-fluid {
     height: 27px;
 }
 
-#checkbox-off {
+#checkbox_off {
     border-radius: 5px 0px 0px 5px;
+    border-right: 1px lightgrey solid;
 }
 
-#checkbox-on {
+#checkbox_on {
     border-radius: 0px 5px 5px 0px;
 }
 
@@ -444,7 +445,7 @@ container-fluid {
     background-color: lightgrey;
 }
 
-.mask {
+.checkbox_active_zone {
     width: 100%;
     height: 100%;
     position: absolute;
